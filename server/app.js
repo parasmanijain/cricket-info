@@ -5,9 +5,16 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 
 const country_controller = require('./controllers/country');
+const city_controller = require('./controllers/city');
+const ground_controller = require('./controllers/ground');
 
 app.get('/countries', country_controller.getCountryList);
+app.get('/cities', city_controller.getCityList);
+app.get('/grounds', ground_controller.getGroundList);
+
 app.post('/country', country_controller.addNewCountry);
+app.post('/city', city_controller.addNewCity);
+app.post('/ground', ground_controller.addNewGround);
 
 function setupCORS(req, res, next) {
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');

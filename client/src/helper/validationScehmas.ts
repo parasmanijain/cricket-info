@@ -8,3 +8,21 @@ export const countryValidationSchema = yup.object({
       .string()
       .required('Country is required')
 });
+
+export const cityValidationSchema = yup.object({
+  name: yup
+      .string()
+      .required('Name is required'),
+  country: yup
+      .string()
+      .required('Country is required')
+});
+
+export const groundValidationSchema = yup.object({
+  name: yup
+      .string()
+      .required('Name is required'),
+  city: yup
+      .string()
+      .required('City is required')
+});
