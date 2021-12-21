@@ -6,7 +6,7 @@ export const GET_COUNTRIES_URL = '/countries';
 export const GET_CITIES_URL = '/cities';
 export const GET_GROUNDS_URL = '/grounds';
 
-export const ITEM_HEIGHT = 48;
+export const ITEM_HEIGHT = 72;
 export const ITEM_PADDING_TOP = 8;
 export const MenuProps = {
   PaperProps: {

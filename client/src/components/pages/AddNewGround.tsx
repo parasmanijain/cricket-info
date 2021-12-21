@@ -48,10 +48,9 @@ export const AddNewGround = () => {
 
   const makeSingleOptionItems = (data, key) => {
     const items = [];
-    console.log(data);
     data.forEach((element, index)=> {
       if (element[key]) {
-        items.push(<ListSubheader key={element._id + index}>{element.name}</ListSubheader>);
+        items.push(<ListSubheader sx={{ fontSize: '16px', fontWeight: '700' }} key={element._id + index}>{element.name}</ListSubheader>);
         element[key].forEach((el)=> {
           items.push(
               <MenuItem key={el._id} value={el._id}>
