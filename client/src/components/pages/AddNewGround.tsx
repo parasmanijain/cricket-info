@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axiosConfig from '../../helper/axiosConfig';
 import { useFormik } from 'formik';
-import { ADD_NEW_GROUND_URL, GET_CITIES_URL, MenuProps } from '../../helper/config';
+import { ADD_NEW_GROUND_URL, GET_COUNTRIES_URL, MenuProps } from '../../helper/config';
 import { groundValidationSchema as validationSchema } from '../../helper/validationScehmas';
-import { Box, Button, TextField, Select, CheckBox, InputLabel, ListItemText, MenuItem,
+import { Box, Button, TextField, Select, InputLabel, ListItemText, MenuItem,
   FormControl,
   OutlinedInput,
-  FormHelperText } from '../lib';
+  FormHelperText,
+  ListSubheader,
+  Divider } from '../lib';
 
 export const AddNewGround = () => {
   const [cityData, setCityData] = useState([]);
@@ -31,7 +33,7 @@ export const AddNewGround = () => {
     }
   });
   useEffect(() => {
-    axiosConfig.get(`${GET_CITIES_URL}`, {
+    axiosConfig.get(`${GET_COUNTRIES_URL}`, {
     })
         .then(function(response) {
           setCityData(response.data);
@@ -43,6 +45,31 @@ export const AddNewGround = () => {
       setCityData([]);
     };
   }, []);
+
+  const makeSingleOptionItems = (data, key) => {
+    const items = [];
+    console.log(data);
+    data.forEach((element, index)=> {
+      if (element[key]) {
+        items.push(<ListSubheader key={element._id + index}>{element.name}</ListSubheader>);
+        element[key].forEach((el)=> {
+          items.push(
+              <MenuItem key={el._id} value={el._id}>
+                {el.name}
+              </MenuItem>
+          );
+        });
+        items.push(<Divider key={index} />);
+      } else {
+        items.push(
+            <MenuItem key={element._id + index} value={element._id}>
+              {element.name}
+            </MenuItem>
+        );
+      }
+    });
+    return items;
+  };
 
 
   return (
@@ -71,11 +98,7 @@ export const AddNewGround = () => {
             input={<OutlinedInput label="City" />}
             MenuProps={MenuProps}
           >
-            {[...cityData].map((city) => (
-              <MenuItem key={city._id} value={city._id}>
-                <ListItemText primary={city.name} />
-              </MenuItem>
-            ))}
+            {makeSingleOptionItems([...cityData], 'cities')}
           </Select>
           <FormHelperText>{formik.touched.city && formik.errors.city}</FormHelperText>
         </FormControl>

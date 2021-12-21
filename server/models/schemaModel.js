@@ -6,7 +6,7 @@ const countrySchema = new mongoose.Schema({
 });
 
 const citySchema = new mongoose.Schema({
-    name: { type: String, unique: true },
+    name: { type: String },
     country: { type: mongoose.Schema.Types.ObjectId, ref: 'Country', required: true },
     grounds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Ground' }]
 });
@@ -15,6 +15,8 @@ const groundSchema = new mongoose.Schema({
     name: { type: String, unique: true },
     city: { type: mongoose.Schema.Types.ObjectId, ref: 'City', required: true }
 });
+
+citySchema.index({ name: 1, country: 1 }, { unique: true });
 
 module.exports = {
     Country: mongoose.model('Country', countrySchema),
