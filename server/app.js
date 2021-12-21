@@ -4,6 +4,11 @@ const app = express();
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 
+const country_controller = require('./controllers/country');
+
+app.get('/countries', country_controller.getCountryList);
+app.post('/country', country_controller.addNewCountry);
+
 function setupCORS(req, res, next) {
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'X-Requested-With, Content-type,Accept,X-Access-Token,X-Key');
