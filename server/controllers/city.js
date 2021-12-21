@@ -41,15 +41,6 @@ const addNewCity = async (req, res) => {
     }
 };
 
-City.syncIndexes(function (err, res) {
-    if (err) {
-        console.log("Error", err);
-        return err;
-    }
-    console.log("Succes:", res);
-    return res;
-});
-
 module.exports = {
     getCityList,
     addNewCity

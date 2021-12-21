@@ -10,9 +10,9 @@ const getGroundList = (req, res) => {
 
 const addNewGround = async (req, res) => {
     try {
-        const { name, city } = req.body;
+        const { name, city, matches } = req.body;
         // get data from the view and add it to mongodb
-        var query = { 'name': name, 'city': city };
+        var query = { 'name': name, 'city': city, 'matches': matches };
         let doc = await Ground.findOneAndUpdate(query, { "$set": { "name": name } }, {
             new: true,
             upsert: true,
@@ -40,6 +40,15 @@ const addNewGround = async (req, res) => {
         return res.status(400).json(err);
     }
 };
+
+Ground.syncIndexes(function (err, res) {
+    if (err) {
+        console.log("Error", err);
+        return err;
+    }
+    console.log("Succes:", res);
+    return res;
+});
 
 module.exports = {
     getGroundList,

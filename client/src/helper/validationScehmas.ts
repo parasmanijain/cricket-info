@@ -26,3 +26,9 @@ export const groundValidationSchema = yup.object({
       .string()
       .required('City is required')
 });
+
+export const teamValidationSchema = yup.object({
+  name: yup
+      .string()
+      .required('Team is required')
+});
