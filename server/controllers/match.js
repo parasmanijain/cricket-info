@@ -7,7 +7,10 @@ const getMatchList = (req, res) => {
     Match.find({}, null, { sort: { name: 1 } })
         .skip((page - 1) * limit)
         .limit(limit)
-        .populate('ground')
+        .populate({
+            path: 'ground',
+            populate: [{ path: 'city',  populate: [{ path: 'country' }] }]
+        })
         .populate('teams')
         .populate('winner')
         .populate('loser')

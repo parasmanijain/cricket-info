@@ -9,14 +9,16 @@ import { InputLabel } from './InputLabel';
 import { ListItemText } from './ListItemText';
 import { ListSubheader } from './ListSubheader';
 import { OutlinedInput } from './OutlinedInput';
+import { Pagination } from './Pagination';
 import { Progress } from './Progress';
 import { Radio } from './Radio';
 import { Select } from './Select';
 import { Switch } from './Switch';
 import { Tab } from './Tab';
+import { TableCell } from './TableCell';
 import { TextField } from './TextField';
 
 export {
   Box, Button, TextField, Tab, Progress, CheckBox, OutlinedInput, Select, FormHelperText, InputLabel,
-  ListItemText, Divider, ListSubheader, Switch, FormLabel, FormControlLabel, Radio
+  ListItemText, Divider, ListSubheader, Switch, FormLabel, FormControlLabel, Radio, TableCell, Pagination
 };
