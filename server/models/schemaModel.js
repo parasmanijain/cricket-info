@@ -30,7 +30,7 @@ const matchSchema = new mongoose.Schema({
     end_date: { type: Date, required: true },
     ground: { type: mongoose.Schema.Types.ObjectId, ref: 'Ground', required: true },
     teams: { type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Team', required: true }], validate: [(val) => val.length === 2, 'Must have two teams'] },
-    winner: { type: mongoose.Schema.Types.ObjectId, ref: 'Teamm' },
+    winner: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
     loser: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
     draw: { type: Boolean },
     tie: { type: Boolean },

@@ -40,15 +40,14 @@ const addNewGround = async (req, res) => {
         return res.status(400).json(err);
     }
 };
-
-Ground.syncIndexes(function (err, res) {
-    if (err) {
-        console.log("Error", err);
-        return err;
-    }
-    console.log("Succes:", res);
-    return res;
-});
+// Ground.syncIndexes(function (err, res) {
+//     if (err) {
+//         console.log("Error", err);
+//         return err;
+//     }
+//     console.log("Succes:", res);
+//     return res;
+// });
 
 module.exports = {
     getGroundList,

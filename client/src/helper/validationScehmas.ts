@@ -32,3 +32,35 @@ export const teamValidationSchema = yup.object({
       .string()
       .required('Team is required')
 });
+
+export const matchValidationSchema = yup.object({
+  start_date: yup
+      .date()
+      .required('Start Date is required'),
+  end_date: yup
+      .date()
+      .required('End Date is required'),
+  ground: yup
+      .string()
+      .required('Ground is required'),
+  teams: yup
+      .array()
+      .required('Teams are required'),
+  winner: yup
+      .string(),
+  loser: yup
+      .string(),
+  draw: yup
+      .boolean(),
+  tie: yup
+      .boolean(),
+  innings: yup
+      .boolean(),
+  runs: yup
+      .boolean(),
+  wickets: yup
+      .boolean(),
+  margin: yup
+      .string()
+
+});

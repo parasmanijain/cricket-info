@@ -1,4 +1,4 @@
-import { AddNewCity, AddNewCountry, AddNewGround, AddNewTeam, Home } from '../pages';
+import { AddNewCity, AddNewCountry, AddNewGround, AddNewMatch, AddNewTeam, Home } from '../pages';
 
 export const routes = [
   {
@@ -30,4 +30,10 @@ export const routes = [
     'label': 'Add New Team',
     'production': false,
     'component': AddNewTeam
+  },
+  {
+    'path': '/add-new-match',
+    'label': 'Add New Match',
+    'production': false,
+    'component': AddNewMatch
   }];
