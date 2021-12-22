@@ -2,7 +2,6 @@ import React from 'react';
 import { Bar, Box } from '../lib';
 
 const renderOptions = (title, subtitle?) => {
-  console.log(subtitle);
   return (
     { maintainAspectRatio: false,
       plugins:
