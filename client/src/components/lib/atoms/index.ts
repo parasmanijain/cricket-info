@@ -10,6 +10,7 @@ import { ListItemText } from './ListItemText';
 import { ListSubheader } from './ListSubheader';
 import { OutlinedInput } from './OutlinedInput';
 import { Progress } from './Progress';
+import { Radio } from './Radio';
 import { Select } from './Select';
 import { Switch } from './Switch';
 import { Tab } from './Tab';
@@ -17,5 +18,5 @@ import { TextField } from './TextField';
 
 export {
   Box, Button, TextField, Tab, Progress, CheckBox, OutlinedInput, Select, FormHelperText, InputLabel,
-  ListItemText, Divider, ListSubheader, Switch, FormLabel, FormControlLabel
+  ListItemText, Divider, ListSubheader, Switch, FormLabel, FormControlLabel, Radio
 };

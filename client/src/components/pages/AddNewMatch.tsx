@@ -10,7 +10,7 @@ import { LocalizationProvider, DatePicker } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { matchValidationSchema as validationSchema } from '../../helper/validationScehmas';
 import { Box, Button, TextField, Select, CheckBox, FormControl, InputLabel, MenuItem, ListItemText,
-  Divider, OutlinedInput, ListSubheader, FormHelperText, Switch, FormLabel, FormControlLabel, FormGroup } from '../lib';
+  Divider, OutlinedInput, ListSubheader, FormHelperText, FormLabel, FormControlLabel, Radio, RadioGroup } from '../lib';
 
 
 const initialValues = {
@@ -31,7 +31,8 @@ const initialValues = {
 export const AddNewMatch = () => {
   const [groundData, setGroundData] = useState([]);
   const [teamData, setTeamData] = useState([]);
-  const [result, setResult] = useState(false);
+  const [outcomeValue, setOutcomeValue] = React.useState(null);
+  const [marginValue, setMarginValue] = React.useState(null);
   const fetchData = () => {
     const grounds = axiosConfig.get(`${GET_GROUNDS_URL}`);
     const teams = axiosConfig.get(`${GET_TEAMS_URL}`);
@@ -51,33 +52,27 @@ export const AddNewMatch = () => {
 
   const formik = useFormik({
     initialValues,
+    enableReinitialize: true,
     validationSchema,
     onSubmit: (values, { resetForm }) => {
       let apiURL = '';
       let request = {};
       apiURL = ADD_NEW_MATCH_URL;
-      const { start_date, end_date, ground, teams, draw, tie, winner, loser, innings, runs, wickets, margin } = formik.values;
+      const { start_date, end_date, ground, teams, winner, margin } = formik.values;
       request = {
         start_date,
         end_date,
         ground,
         teams
       };
-      if (draw) {
-        request = { ...request, draw };
-      } else if (tie) {
-        request = { ...request, tie };
+      if (['draw', 'tie'].includes(outcomeValue)) {
+        request = { ...request, [outcomeValue]: true };
       } else {
+        if (['innings', 'runs', 'wickets'].includes(marginValue)) {
+          request = { ...request, [marginValue]: true };
+        }
+        const loser = teams.filter((ele)=> ele !== winner).join();
         request = { ...request, winner, loser, margin };
-        if (innings) {
-          request = { ...request, innings };
-        }
-        if (runs) {
-          request = { ...request, runs };
-        }
-        if (wickets) {
-          request = { ...request, wickets };
-        }
       }
       axiosConfig.post(apiURL, request)
           .then(function(response) {
@@ -113,28 +108,22 @@ export const AddNewMatch = () => {
     return items;
   };
 
-  const makeMultiOptionItems = (data, list, key) => {
-    const items = [];
-    data.forEach((element, index)=> {
-      if (element[list]) {
-        items.push(<ListSubheader sx={{ fontSize: '16px', fontWeight: '700' }} key={element._id + index}>{element.name}</ListSubheader>);
-        element[list].forEach((el)=> {
-          items.push(
-              <MenuItem key={el._id} value={el._id}>
-                <CheckBox checked={formik.values[key].indexOf(el._id) > -1} />
-                <ListItemText primary={el.name} />
-              </MenuItem>
-          );
-        });
-        items.push(<Divider key={index} />);
-      }
-    });
-    return items;
+  const handleOutcomeChange = (event) => {
+    setOutcomeValue(event.target.value);
   };
 
-  const handleChange = (event) => {
-    setResult(event.target.checked);
+  const handleMarginChange = (event) => {
+    const { value } = event.target;
+    setMarginValue(value);
+    formik.setFieldValue('margin', 1);
   };
+
+  const calcEndDate = (date, days) => {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  };
+
   return (
     <form id="form" onSubmit={formik.handleSubmit} autoComplete="off">
       <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
@@ -143,9 +132,10 @@ export const AddNewMatch = () => {
             <DatePicker
               label="Start Date"
               minDate={new Date('3-15-1877')}
+              maxDate={ new Date()}
               value={formik.values.start_date}
               onChange={(newValue) => {
-                formik.setValues({ ...formik.values, start_date: (new Date(newValue)) });
+                formik.setValues({ ...formik.values, start_date: (new Date(new Date(newValue).setUTCHours(0, 0, 0))) });
               }}
               renderInput={(params) => {
                 return <TextField {...params} />;
@@ -158,10 +148,11 @@ export const AddNewMatch = () => {
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               label="End Date"
-              minDate={new Date('3-15-1877')}
+              minDate={new Date(formik.values.start_date)}
+              maxDate={calcEndDate(formik.values.start_date, 15) }
               value={formik.values.end_date}
               onChange={(newValue) => {
-                formik.setValues({ ...formik.values, end_date: (new Date(newValue)) });
+                formik.setValues({ ...formik.values, end_date: (new Date(new Date(newValue).setUTCHours(0, 0, 0))) });
               }}
               renderInput={(params) => {
                 return <TextField {...params} />;
@@ -215,44 +206,74 @@ export const AddNewMatch = () => {
           </Select>
           <FormHelperText>{formik.touched.teams && formik.errors.teams}</FormHelperText>
         </FormControl>
-        <FormControl component="fieldset" variant="standard" sx={{ m: 2, width: 350 }}>
-          <FormLabel component="legend">Outcome</FormLabel>
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Switch checked={formik.values.draw} onChange={formik.handleChange} name="draw" />
-              }
-              label="Draw"
+        { formik.values.teams.length === 2 ?
+        <React.Fragment>
+          <FormControl component="fieldset" sx={{ m: 2, width: 350 }}>
+            <FormLabel component="legend">Outcome</FormLabel>
+            <RadioGroup
+              aria-label="outcome"
+              name="outcome-radio-buttons-group"
+              value={outcomeValue}
+              onChange={handleOutcomeChange}
+            >
+              <FormControlLabel value="draw" control={<Radio />} label="Draw" />
+              <FormControlLabel value="tie" control={<Radio />} label="Tie" />
+              <FormControlLabel value="result" control={<Radio />} label="Result" />
+            </RadioGroup>
+          </FormControl>
+          { outcomeValue === 'result' ?
+        <React.Fragment>
+          <FormControl sx={{ m: 2, width: 350 }}>
+            <InputLabel id="winner-label">Winner</InputLabel>
+            <Select
+              labelId="winner-label"
+              id="winner"
+              name="winner"
+              value={formik.values.winner}
+              onChange={formik.handleChange}
+              error={formik.touched.winner && Boolean(formik.errors.winner)}
+              input={<OutlinedInput label="Winner" />}
+              MenuProps={MenuProps}
+            >
+              {[...teamData].filter((el)=> formik.values.teams.includes(el._id)).map((country) => (
+                <MenuItem key={country._id} value={country._id}>
+                  <ListItemText primary={country.name} />
+                </MenuItem>
+              ))}
+            </Select>
+            <FormHelperText>{formik.touched.ground && formik.errors.ground}</FormHelperText>
+          </FormControl>
+          <FormControl component="fieldset" sx={{ m: 2, width: 350 }}>
+            <FormLabel component="legend">Margin</FormLabel>
+            <RadioGroup
+              aria-label="margin"
+              name="margin-radio-buttons-group"
+              value={marginValue}
+              onChange={handleMarginChange}
+            >
+              <FormControlLabel value="innings" control={<Radio />} label="Innings" />
+              <FormControlLabel value="runs" control={<Radio />} label="Runs" />
+              <FormControlLabel value="wickets" control={<Radio />} label="Wickets" />
+            </RadioGroup>
+          </FormControl>
+          { marginValue ? <FormControl sx={{ m: 2, width: 350 }}>
+            <TextField
+              id="margin"
+              label= {marginValue === 'wickets' ? 'Wicket(s)' : 'Run(s)'}
+              type="number"
+              value={formik.values.margin}
+              onChange={formik.handleChange}
+              error={formik.touched.margin && Boolean(formik.errors.margin)}
+              helperText={formik.touched.margin && formik.errors.margin}
+              InputProps={{ inputProps: { min: 1, max: marginValue === 'wickets' ? 10 : 1000 } }}
             />
-            <FormControlLabel
-              control={
-                <Switch checked={formik.values.tie} onChange={formik.handleChange} name="tie" />
-              }
-              label="Tie"
-            />
-            <FormControlLabel
-              control={
-                <Switch checked={result} onChange={handleChange} name="result" />
-              }
-              label="Result"
-            />
-          </FormGroup>
-        </FormControl>
-        <FormControl sx={{ m: 2, width: 350 }}>
-          <TextField
-            id="outlined-number"
-            label="Margin"
-            type="number"
-            value={formik.values.margin}
-            onChange={formik.handleChange}
-            error={formik.touched.margin && Boolean(formik.errors.margin)}
-            helperText={formik.touched.margin && formik.errors.margin}
-            InputLabelProps={{
-              shrink: true
-            }}
-            InputProps={{ inputProps: { min: 1, max: formik.values.wickets ? 10 : 1000 } }}
-          />
-        </FormControl>
+          </FormControl>: null}
+
+        </React.Fragment> :
+
+       null}
+        </React.Fragment> :
+        null}
         <Button color="primary" variant="contained" type="submit" sx={{ margin: 2, width: 300 }}>
           Submit
         </Button>

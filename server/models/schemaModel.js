@@ -37,7 +37,7 @@ const matchSchema = new mongoose.Schema({
     wickets: { type: Boolean },
     innings: { type: Boolean },
     runs: { type: Boolean },
-    margin: { type: String }
+    margin: { type: Number }
 });
 
 citySchema.index({ name: 1, country: 1 }, { unique: true });

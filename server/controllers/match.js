@@ -105,6 +105,15 @@ const addNewMatch = async (req, res) => {
     }
 };
 
+// Match.syncIndexes(function (err, res) {
+//     if (err) {
+//         console.log("Error", err);
+//         return err;
+//     }
+//     console.log("Succes:", res);
+//     return res;
+// });
+
 module.exports = {
     getMatchList,
     addNewMatch,
