@@ -5,6 +5,8 @@ export const ADD_NEW_TEAM_URL = '/team';
 export const ADD_NEW_MATCH_URL = '/match';
 
 export const GET_COUNTRIES_URL = '/countries';
+export const GET_COUNTRY_GROUNDS_URL = '/countryGrounds';
+export const GET_COUNTRY_CITIES_URL = '/countryCities';
 export const GET_CITIES_URL = '/cities';
 export const GET_GROUNDS_URL = '/grounds';
 export const GET_TEAMS_URL = '/teams';

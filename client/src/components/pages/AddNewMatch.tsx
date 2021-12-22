@@ -4,7 +4,7 @@ import { useFormik } from 'formik';
 import * as _ from 'lodash';
 import axiosConfig from '../../helper/axiosConfig';
 import {
-  ADD_NEW_MATCH_URL, GET_COUNTRIES_URL, GET_GROUNDS_URL, GET_TEAMS_URL, MenuProps
+  ADD_NEW_MATCH_URL, GET_COUNTRY_GROUNDS_URL, GET_GROUNDS_URL, GET_TEAMS_URL, MenuProps
 } from '../../helper/config';
 import { LocalizationProvider, DatePicker } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
@@ -34,7 +34,7 @@ export const AddNewMatch = () => {
   const [outcomeValue, setOutcomeValue] = React.useState(null);
   const [marginValue, setMarginValue] = React.useState(null);
   const fetchData = () => {
-    const grounds = axiosConfig.get(`${GET_COUNTRIES_URL}`);
+    const grounds = axiosConfig.get(`${GET_COUNTRY_GROUNDS_URL}`);
     const teams = axiosConfig.get(`${GET_TEAMS_URL}`);
     Promise.all([grounds, teams]).then((responses) => {
       setGroundData(responses[0].data);

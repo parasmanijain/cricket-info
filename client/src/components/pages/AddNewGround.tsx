@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axiosConfig from '../../helper/axiosConfig';
 import { useFormik } from 'formik';
-import { ADD_NEW_GROUND_URL, GET_COUNTRIES_URL, MenuProps } from '../../helper/config';
+import { ADD_NEW_GROUND_URL, GET_COUNTRY_CITIES_URL, MenuProps } from '../../helper/config';
 import { groundValidationSchema as validationSchema } from '../../helper/validationScehmas';
 import { Box, Button, TextField, Select, InputLabel, ListItemText, MenuItem,
   FormControl,
@@ -33,7 +33,7 @@ export const AddNewGround = () => {
     }
   });
   useEffect(() => {
-    axiosConfig.get(`${GET_COUNTRIES_URL}`, {
+    axiosConfig.get(`${GET_COUNTRY_CITIES_URL}`, {
     })
         .then(function(response) {
           setCityData(response.data);

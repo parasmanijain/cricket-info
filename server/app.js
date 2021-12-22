@@ -11,15 +11,20 @@ const team_controller = require('./controllers/team');
 const match_controller = require('./controllers/match');
 
 app.get('/countries', country_controller.getCountryList);
-app.get('/cities', city_controller.getCityList);
-app.get('/grounds', ground_controller.getGroundList);
-app.get('/teams', team_controller.getTeamList);
-app.get('/matches', match_controller.getMatchList);
-
+app.get('/countryGrounds', country_controller.getCountryGroundList);
+app.get('/countryCities', country_controller.getCountryCityList);
 app.post('/country', country_controller.addNewCountry);
+
+app.get('/cities', city_controller.getCityList);
 app.post('/city', city_controller.addNewCity);
+
+app.get('/grounds', ground_controller.getGroundList);
 app.post('/ground', ground_controller.addNewGround);
+
+app.get('/teams', team_controller.getTeamList);
 app.post('/team', team_controller.addNewTeam);
+
+app.get('/matches', match_controller.getMatchList);
 app.post('/match', match_controller.addNewMatch);
 
 function setupCORS(req, res, next) {
