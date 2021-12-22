@@ -81,20 +81,24 @@ const addNewMatch = async (req, res) => {
                 }
             }));
         } else {
-             bulkTeamOps = [{
-                updateOne: {
-                    filter: { _id: newMatch.winner },
-                    update: { "$push": { "wins": newMatch._id } },
-                    upsert: true,
-                    useFindAndModify: false
-                },
+            const bulkWinnerOps = [
+                {
+                    updateOne: {
+                        filter: { _id: newMatch.winner },
+                        update: { "$push": { "wins": newMatch._id } },
+                        upsert: true,
+                        useFindAndModify: false
+                    }
+            }];
+            const bulkLoserOps = [{
                 updateOne: {
                     filter: { _id: newMatch.loser },
                     update: { "$push": { "losses": newMatch._id } },
                     upsert: true,
                     useFindAndModify: false
                 }
-            }];
+            }]
+            bulkTeamOps = [...bulkWinnerOps, ...bulkLoserOps];
         }
         const teamOperation = Team.bulkWrite(bulkTeamOps)
                 .then(bulkWriteOpResult => console.log('Team BULK update OK:', bulkWriteOpResult))

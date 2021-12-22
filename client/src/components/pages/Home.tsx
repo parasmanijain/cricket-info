@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 
   },
   paper: {
-    width: '90%',
+    width: '75%',
     margin: '10px',
     display: 'flex',
     flexDirection: 'column',
@@ -113,24 +113,26 @@ export const Home = () => {
           <Table aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell>Duration</TableCell>
-                <TableCell>Teams</TableCell>
-                <TableCell>Ground</TableCell>
-                <TableCell>Result</TableCell>
+                <TableCell align="left">Match #</TableCell>
+                <TableCell align="center">Duration</TableCell>
+                <TableCell align="center">Teams</TableCell>
+                <TableCell align="center">Ground</TableCell>
+                <TableCell align="center">Result</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {matchList.map((row) => (
+              {matchList.map((row, index) => (
                 <TableRow
                   key={row._id}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
-                  <TableCell component="th" scope="row">
+                  <TableCell align="left">{index+1}</TableCell>
+                  <TableCell align="center"component="th" scope="row">
                     { renderDuration(row.start_date, row.end_date)}
                   </TableCell>
-                  <TableCell>{renderTeams(row.teams)}</TableCell>
-                  <TableCell>{row.ground.name}, {row.ground.city.name}, {row.ground.city.country.name}</TableCell>
-                  <TableCell >{renderResult(row)}</TableCell>
+                  <TableCell align="center">{renderTeams(row.teams)}</TableCell>
+                  <TableCell align="center">{row.ground.name}, {row.ground.city.name}, {row.ground.city.country.name}</TableCell>
+                  <TableCell align="center" >{renderResult(row)}</TableCell>
                 </TableRow>
               ))}
               {emptyRows > 0 && (
