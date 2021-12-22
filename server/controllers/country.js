@@ -1,32 +1,89 @@
-const { Country } = require('../models/schemaModel');
+const { Country, City, Ground } = require('../models/schemaModel');
 
-const getCountryList =  (req, res) => {
+const getCountryList = (req, res) => {
     // get data from the view and add it to mongodb
     Country.find({}, null, { sort: { name: 1 } })
-    .exec(function (err, results) {
-        if (err) return res.send(500, { error: err });
-        return res.send(results);
-    });
+        .exec(function (err, results) {
+            if (err) return res.send(500, { error: err });
+            return res.send(results);
+        });
 };
 
-const getCountryCityList =  (req, res) => {
+const getCountryCityList = (req, res) => {
     // get data from the view and add it to mongodb
     Country.find({}, null, { sort: { name: 1 } })
-    .populate({path: 'cities', options: { sort: { 'name': 1 } } })
-    .exec(function (err, results) {
-        if (err) return res.send(500, { error: err });
-        return res.send(results);
-    });
+        .populate({ path: 'cities', options: { sort: { 'name': 1 } } })
+        .exec(function (err, results) {
+            if (err) return res.send(500, { error: err });
+            return res.send(results);
+        });
 };
 
-const getCountryGroundList =  (req, res) => {
+const getCountryGroundList = (req, res) => {
     // get data from the view and add it to mongodb
     Country.find({}, null, { sort: { name: 1 } })
-    .populate({path: 'cities', options: { sort: { 'name': 1 } }, populate: [{ path: 'grounds', options: { sort: { 'name': 1 } } }] })
-    .exec(function (err, results) {
-        if (err) return res.send(500, { error: err });
-        return res.send(results);
-    });
+        .populate({ path: 'cities', options: { sort: { 'name': 1 } }, populate: [{ path: 'grounds', options: { sort: { 'name': 1 } } }] })
+        .exec(function (err, results) {
+            if (err) return res.send(500, { error: err });
+            return res.send(results);
+        });
+};
+
+const getCountryGroundCount = (req, res) => {
+    // get data from the view and add it to mongodb
+    Country.aggregate(
+        [{
+            "$lookup": {
+                "from": "cities",
+                "let": { "cities": "$cities" },
+                "pipeline": [
+                    { "$match": { "$expr": { "$in": ["$_id", "$$cities"] } } },
+                    {
+                        "$lookup": {
+                            "from": "grounds",
+                            "let": { "grounds": "$grounds" },
+                            "pipeline": [
+                                { "$match": { "$expr": { "$in": ["$_id", "$$grounds"] } } },
+                            ],
+                            "as": "grounds"
+                        }
+                    }
+                ],
+                "as": "cities"
+            }
+        },
+          {
+            "$project": {
+                "name": 1,
+                "city": {
+                    "$map": {
+                        "input": "$cities",
+                        "as": "c",
+                        "in": {
+                            "ground": {
+                                "$map": {
+                                    "input": "$$c.grounds",
+                                    "as": "g",
+                                    "in": {
+                                        "name": "$$g.name",
+                                        "length": {
+                                            "$size": "$$g.matches"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        { "$sort": { "name": 1 } },
+        ],
+        function (err, results) {
+            if (err) return res.send(500, { error: err });
+            return res.send(results);
+        }
+    )
 };
 
 const addNewCountry = (req, res) => {
@@ -46,5 +103,6 @@ module.exports = {
     getCountryList,
     getCountryCityList,
     getCountryGroundList,
+    getCountryGroundCount,
     addNewCountry
 };

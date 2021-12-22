@@ -12,6 +12,8 @@ export const GET_GROUNDS_URL = '/grounds';
 export const GET_TEAMS_URL = '/teams';
 export const GET_MATCHES_URL = '/matches';
 
+export const GET_COUNTRY_GROUNDS_COUNT_URL = '/countryGroundsCount';
+
 export const ITEM_HEIGHT = 72;
 export const ITEM_PADDING_TOP = 8;
 export const MenuProps = {

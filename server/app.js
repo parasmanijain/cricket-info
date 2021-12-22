@@ -13,6 +13,7 @@ const match_controller = require('./controllers/match');
 app.get('/countries', country_controller.getCountryList);
 app.get('/countryGrounds', country_controller.getCountryGroundList);
 app.get('/countryCities', country_controller.getCountryCityList);
+app.get('/countryGroundsCount', country_controller.getCountryGroundCount);
 app.post('/country', country_controller.addNewCountry);
 
 app.get('/cities', city_controller.getCityList);
