@@ -4,7 +4,7 @@ import { useFormik } from 'formik';
 import * as _ from 'lodash';
 import axiosConfig from '../../helper/axiosConfig';
 import {
-  ADD_NEW_MATCH_URL, GET_GROUNDS_URL, GET_TEAMS_URL, MenuProps
+  ADD_NEW_MATCH_URL, GET_COUNTRIES_URL, GET_GROUNDS_URL, GET_TEAMS_URL, MenuProps
 } from '../../helper/config';
 import { LocalizationProvider, DatePicker } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
@@ -34,7 +34,7 @@ export const AddNewMatch = () => {
   const [outcomeValue, setOutcomeValue] = React.useState(null);
   const [marginValue, setMarginValue] = React.useState(null);
   const fetchData = () => {
-    const grounds = axiosConfig.get(`${GET_GROUNDS_URL}`);
+    const grounds = axiosConfig.get(`${GET_COUNTRIES_URL}`);
     const teams = axiosConfig.get(`${GET_TEAMS_URL}`);
     Promise.all([grounds, teams]).then((responses) => {
       setGroundData(responses[0].data);
@@ -84,17 +84,21 @@ export const AddNewMatch = () => {
     }
   });
 
-  const makeSingleOptionItems = (data, key) => {
+  const makeSingleOptionItems = (data, key1, key2) => {
     const items = [];
     data.forEach((element, index)=> {
-      if (element[key]) {
+      const firstLevel = element[key1];
+      if (firstLevel) {
         items.push(<ListSubheader sx={{ fontSize: '16px', fontWeight: '700' }} key={element._id + index}>{element.name}</ListSubheader>);
-        element[key].forEach((el)=> {
-          items.push(
-              <MenuItem key={el._id} value={el._id}>
-                {el.name}
-              </MenuItem>
-          );
+        firstLevel.forEach((el1)=> {
+          const secondLevel = el1[key2];
+          secondLevel.forEach((el2)=> {
+            items.push(
+                <MenuItem key={el2._id} value={el2._id}>
+                  {el2.name}, {el1.name}
+                </MenuItem>
+            );
+          });
         });
         items.push(<Divider key={index} />);
       } else {
@@ -161,7 +165,7 @@ export const AddNewMatch = () => {
             />
           </LocalizationProvider>
         </FormControl>
-        <FormControl sx={{ m: 2, width: 350 }}>
+        <FormControl sx={{ m: 2, width: 570 }}>
           <InputLabel id="ground-label">Ground</InputLabel>
           <Select
             labelId="ground-label"
@@ -173,7 +177,7 @@ export const AddNewMatch = () => {
             input={<OutlinedInput label="Ground" />}
             MenuProps={MenuProps}
           >
-            {makeSingleOptionItems([...groundData], 'grounds')}
+            {makeSingleOptionItems([...groundData], 'cities', 'grounds')}
           </Select>
           <FormHelperText>{formik.touched.ground && formik.errors.ground}</FormHelperText>
         </FormControl>

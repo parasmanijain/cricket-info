@@ -2,7 +2,9 @@ const { Ground, City } = require('../models/schemaModel');
 
 const getGroundList = (req, res) => {
     // get data from the view and add it to mongodb
-    Ground.find({}, null, { sort: { name: 1 } }).populate('city').exec(function (err, results) {
+    Ground.find({}, null, { sort: { name: 1 } })
+    .populate([{ path: 'city',  populate: [{ path: 'country' }] }])
+    .exec(function (err, results) {
         if (err) return res.send(500, { error: err });
         return res.send(results);
     });
