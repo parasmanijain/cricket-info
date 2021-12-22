@@ -96,7 +96,7 @@ export const Home = () => {
   };
 
   useEffect(() => {
-    const topMovieUrl = axiosConfig.get(`${GET_MATCHES_URL}`);
+    const topMovieUrl = axiosConfig.get(`${GET_MATCHES_URL}`, { params: { page, limit: rowsPerPage } });
     Promise.all([topMovieUrl]).then((responses) => {
       setMatchList(responses[0].data.matches);
     }).catch((errors) => {
@@ -105,7 +105,7 @@ export const Home = () => {
     return () => {
       setMatchList([]);
     };
-  }, []);
+  }, [page, rowsPerPage]);
   return (
     <Box className={classes.root}>
       <Paper className={classes.paper}>
