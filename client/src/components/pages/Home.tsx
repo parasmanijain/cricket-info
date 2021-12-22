@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@mui/styles';
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from '../lib';
 import { axiosConfig } from '../../helper';
@@ -47,22 +47,16 @@ const useStyles = makeStyles((theme) => ({
 
 export const Home = () => {
   const classes = useStyles();
-  const [page, setPage] = React.useState(0);
-  const [matchList, setMatchList] = React.useState([]);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [dense, setDense] = React.useState(false);
-
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - matchList.length) : 0;
+  const [page, setPage] = useState(1);
+  const [count, setCount] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [matchList, setMatchList] = useState([]);
+  const [pageSize, setPageSize] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const handleChangePage = (event, newPage) => {
+    console.log('newPage', newPage);
     setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
   };
 
   const renderDuration = (startDate, endDate) => {
@@ -98,14 +92,19 @@ export const Home = () => {
   useEffect(() => {
     const topMovieUrl = axiosConfig.get(`${GET_MATCHES_URL}`, { params: { page, limit: rowsPerPage } });
     Promise.all([topMovieUrl]).then((responses) => {
-      setMatchList(responses[0].data.matches);
+      const { total, page, matches, pageSize } = responses[0].data;
+      setMatchList(matches);
+      setTotal(total);
+      setPage(page);
+      setCount(Math.ceil(total / rowsPerPage));
+      setPageSize(pageSize);
     }).catch((errors) => {
       // react on errors.
     });
     return () => {
       setMatchList([]);
     };
-  }, [page, rowsPerPage]);
+  }, [page]);
   return (
     <Box className={classes.root}>
       <Paper className={classes.paper}>
@@ -135,22 +134,17 @@ export const Home = () => {
                   <TableCell align="center" >{renderResult(row)}</TableCell>
                 </TableRow>
               ))}
-              {emptyRows > 0 && (
-                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
             </TableBody>
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 20]}
+          rowsPerPageOptions={[]}
           component="div"
-          count={matchList.length}
+          count={count}
           rowsPerPage={rowsPerPage}
+          showFirstButton showLastButton
           page={page}
           onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
     </Box>
