@@ -19,21 +19,31 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
-    margin: '10px'
+    justifyContent: 'center'
 
   },
   paper: {
     width: '75%',
-    margin: '10px',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center'
-    // marginBottom: theme.spacing(2),
+    justifyContent: 'center',
+    margin: '4px'
   },
   table: {
     minWidth: 400
+  },
+  cell: {
+    height: '12px',
+    padding: '4px',
+    border: '1px solid black'
+  },
+  header: {
+    fontWeight: 700
+  },
+  pagination: {
+    minHeight: '24px', padding: '4px', border: '1px solid black', borderTop: 'none', boxSizing: 'border-box',
+    display: 'flex', justifyContent: 'center', width: '100%'
   },
   visuallyHidden: {
     border: 0,
@@ -69,7 +79,7 @@ const TablePaginationActions = (props) => {
   };
 
   return (
-    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
+    <Box sx={{ flexShrink: 0, ml: 2.5, minHeight: '24px' }}>
       <IconButton
         onClick={handleFirstPageButtonClick}
         disabled={page === 0}
@@ -116,7 +126,7 @@ export const Home = () => {
   const [count, setCount] = useState(1);
   const [total, setTotal] = useState(0);
   const [matchList, setMatchList] = useState([]);
-  const limit = 15;
+  const limit = 30;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage+1);
@@ -176,12 +186,12 @@ export const Home = () => {
         <TableContainer>
           <Table aria-label="simple table">
             <TableHead>
-              <TableRow>
-                <TableCell align="left">Match #</TableCell>
-                <TableCell align="center">Duration</TableCell>
-                <TableCell align="center">Teams</TableCell>
-                <TableCell align="center">Ground</TableCell>
-                <TableCell align="center">Result</TableCell>
+              <TableRow className={classes.cell}>
+                <TableCell className={`${classes.cell} ${classes.header}`} align="left">Match #</TableCell>
+                <TableCell className={`${classes.cell} ${classes.header}`} align="center">Duration</TableCell>
+                <TableCell className={`${classes.cell} ${classes.header}`} align="center">Teams</TableCell>
+                <TableCell className={`${classes.cell} ${classes.header}`} align="center">Ground</TableCell>
+                <TableCell className={`${classes.cell} ${classes.header}`} align="center">Result</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -190,21 +200,25 @@ export const Home = () => {
                     .map((row, index) => (
                       <TableRow
                         key={row._id}
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                        className={classes.cell}
                       >
-                        <TableCell align="left">{((page-1) * limit) + index+1}</TableCell>
-                        <TableCell align="center"component="th" scope="row">
+                        <TableCell className={classes.cell} align="left">{((page-1) * limit) + index+1}</TableCell>
+                        <TableCell className={classes.cell} align="center"component="th" scope="row">
                           { renderDuration(row.start_date, row.end_date)}
                         </TableCell>
-                        <TableCell align="center">{renderTeams(row.teams)}</TableCell>
-                        <TableCell align="center">{row.ground.name}, {row.ground.city.name}, {row.ground.city.country.name}</TableCell>
-                        <TableCell align="center" >{renderResult(row)}</TableCell>
+                        <TableCell className={classes.cell} align="center">
+                          {renderTeams(row.teams)}</TableCell>
+                        <TableCell className={classes.cell} align="center">
+                          {row.ground.name}, {row.ground.city.name}, {row.ground.city.country.name}</TableCell>
+                        <TableCell className={classes.cell} align="center" >
+                          {renderResult(row)}</TableCell>
                       </TableRow>
                     ))}
             </TableBody>
           </Table>
         </TableContainer>
         <TablePagination
+          className={classes.pagination}
           rowsPerPageOptions={[]}
           component="div"
           count={total}

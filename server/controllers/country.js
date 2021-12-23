@@ -32,7 +32,8 @@ const getCountryGroundList = (req, res) => {
 const getCountryGroundCount = (req, res) => {
     // get data from the view and add it to mongodb
     Country.aggregate(
-        [{
+        [
+            {
             "$lookup": {
                 "from": "cities",
                 "let": { "cities": "$cities" },

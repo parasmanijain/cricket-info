@@ -2,7 +2,7 @@ const { Match, Ground, Team } = require('../models/schemaModel');
 
 const getMatchList = (req, res) => {
     let page = parseInt(req.query.page) || 1;
-    let limit = parseInt(req.query.limit) || 15;
+    let limit = parseInt(req.query.limit) || 30;
     // get data from the view and add it to mongodb
     Match.find({}, null, { sort: { start_date: 1 } })
         .skip((page - 1) * limit)
