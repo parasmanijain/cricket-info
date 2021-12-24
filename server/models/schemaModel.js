@@ -26,6 +26,7 @@ const teamSchema = new mongoose.Schema({
 });
 
 const matchSchema = new mongoose.Schema({
+    number: {type:Number},
     start_date: { type: Date, required: true },
     end_date: { type: Date, required: true },
     ground: { type: mongoose.Schema.Types.ObjectId, ref: 'Ground', required: true },

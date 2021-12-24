@@ -204,7 +204,7 @@ export const Home = () => {
                         className={classes.cell}
                         sx={{ backgroundColor: row.neutral ? '#F0E68C': 'transparent' }}
                       >
-                        <TableCell className={classes.cell} align="left">{((page-1) * limit) + index+1}</TableCell>
+                        <TableCell className={classes.cell} align="left">{row.number}</TableCell>
                         <TableCell className={classes.cell} align="center"component="th" scope="row">
                           { renderDuration(row.start_date, row.end_date)}
                         </TableCell>
