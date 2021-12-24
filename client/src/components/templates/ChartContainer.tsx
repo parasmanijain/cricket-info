@@ -21,10 +21,42 @@ export const ChartContainer = (props:any) => {
 
   const fetchData = () => {
     let chartDetails = [];
+    const westIndies = ['Antigua and Barbuda', 'Barbados', 'Dominica', 'Grenada', 'Guyana', 'Jamaica',
+      'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent and the Grenadines', 'Trinidad and Tobago'];
     if (apiData.length && title.toLowerCase().includes('grounds')) {
+      const westIndiesData = apiData.filter((ele)=> westIndies.includes(ele.name));
+      const otherCountriesData = apiData.filter((ele)=> !westIndies.includes(ele.name));
+      console.log(westIndiesData);
+      console.log(otherCountriesData);
       let data = [];
       let labels = [];
-      apiData.forEach((element)=> {
+
+      westIndiesData.forEach((element, i, arr)=> {
+        data= [];
+        labels = [];
+        let grounds = 0;
+        element.city.forEach((e1)=> {
+          grounds+=e1.ground.length;
+          e1.ground.forEach((e)=> {
+            labels.push(e.name);
+            data.push(e.length);
+          });
+        });
+        const obj = {
+          subtitle: element.name,
+          width: ((width-50)/arr.length)*2,
+          labels,
+          datasets: [
+            {
+              label: 'Matches',
+              backgroundColor: chartColors,
+              hoverBackgroundColor: chartColors,
+              data: data
+            }
+          ] };
+        chartDetails = [...chartDetails, obj];
+      });
+      otherCountriesData.forEach((element)=> {
         data= [];
         labels = [];
         element.city.forEach((e1)=> {
