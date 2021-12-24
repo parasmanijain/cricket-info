@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as _ from 'lodash';
+import enLocale from 'date-fns/locale/en-GB';
 import axiosConfig from '../../helper/axiosConfig';
 import {
   ADD_NEW_MATCH_URL, GET_COUNTRY_GROUNDS_URL, GET_GROUNDS_URL, GET_TEAMS_URL, MenuProps
@@ -134,7 +135,7 @@ export const AddNewMatch = () => {
     <form id="form" onSubmit={formik.handleSubmit} autoComplete="off">
       <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
         <FormControl sx={{ m: 2, width: 350 }}>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <LocalizationProvider dateAdapter={AdapterDateFns} locale={enLocale}>
             <DatePicker
               label="Start Date"
               minDate={new Date('3-15-1877')}
@@ -151,7 +152,7 @@ export const AddNewMatch = () => {
           </LocalizationProvider>
         </FormControl>
         <FormControl sx={{ m: 2, width: 350 }}>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <LocalizationProvider dateAdapter={AdapterDateFns} locale={enLocale}>
             <DatePicker
               label="End Date"
               minDate={new Date(formik.values.start_date)}

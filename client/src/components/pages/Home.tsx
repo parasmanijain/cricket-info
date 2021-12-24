@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@mui/styles';
 import { useTheme } from '@mui/material/styles';
-
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from '../lib';
 import { axiosConfig } from '../../helper';
 import { GET_MATCHES_URL } from '../../helper/config';
