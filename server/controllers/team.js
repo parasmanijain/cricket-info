@@ -22,6 +22,7 @@ const getTeamStatistics = (req, res) => {
                     losses: { $size: "$losses" },
                     draws: { $size: "$draws" },
                     ties: { $size: "$ties" },
+                    total: { $add: [{ $size: "$wins"}, { $size: "$losses" },{ $size: "$draws" }, { $size: "$ties" }]},
                     matches: { $concatArrays: ["$wins", "$losses", "$draws", "$ties"] },
 
                 }
@@ -37,6 +38,7 @@ const getTeamStatistics = (req, res) => {
             {
                 "$project": {
                     name: 1,
+                    total:1,
                     wins: 1,
                     losses: 1,
                     draws: 1,
@@ -70,7 +72,17 @@ const getTeamStatistics = (req, res) => {
                         }
                     }
                 }
-            }
+            },
+            {
+                "$addFields": { 
+                    "hasValue" : { $cond: [ { $eq: [ "$start_date", null ] }, 2, 1 ] },
+                  }
+            },
+             {
+                 "$sort": {
+                    "hasValue":1, "start_date": 1
+                 }
+             }
 
         ],
         function (err, results) {
