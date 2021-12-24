@@ -10,6 +10,7 @@ export const GET_COUNTRY_CITIES_URL = '/countryCities';
 export const GET_CITIES_URL = '/cities';
 export const GET_GROUNDS_URL = '/grounds';
 export const GET_TEAMS_URL = '/teams';
+export const GET_TEAM_STATISTICS_URL = '/teamStatistics';
 export const GET_MATCHES_URL = '/matches';
 
 export const GET_COUNTRY_GROUNDS_COUNT_URL = '/countryGroundsCount';

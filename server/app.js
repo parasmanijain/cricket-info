@@ -23,6 +23,7 @@ app.get('/grounds', ground_controller.getGroundList);
 app.post('/ground', ground_controller.addNewGround);
 
 app.get('/teams', team_controller.getTeamList);
+app.get('/teamStatistics', team_controller.getTeamStatistics);
 app.post('/team', team_controller.addNewTeam);
 
 app.get('/matches', match_controller.getMatchList);
