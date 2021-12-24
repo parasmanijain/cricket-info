@@ -19,7 +19,9 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    boxSizing: 'border-box',
+    padding: '4px'
 
   },
   paper: {
@@ -28,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    margin: '4px'
+    margin: '0px'
   },
   table: {
     minWidth: 400

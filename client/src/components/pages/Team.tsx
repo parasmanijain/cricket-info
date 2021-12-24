@@ -14,10 +14,11 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: '8px'
+    padding: '8px',
+    boxSizing: 'border-box'
   },
   paper: {
-    width: '75%',
+    width: '50%',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -29,7 +30,8 @@ const useStyles = makeStyles((theme) => ({
   },
   cell: {
     border: '1px solid black',
-    fontSize: 16
+    fontSize: 16,
+    padding: '4px'
   },
   header: {
     fontWeight: 700
