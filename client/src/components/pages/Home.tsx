@@ -203,6 +203,7 @@ export const Home = () => {
                       <TableRow
                         key={row._id}
                         className={classes.cell}
+                        sx={{ backgroundColor: row.neutral ? '#F0E68C': 'transparent' }}
                       >
                         <TableCell className={classes.cell} align="left">{((page-1) * limit) + index+1}</TableCell>
                         <TableCell className={classes.cell} align="center"component="th" scope="row">

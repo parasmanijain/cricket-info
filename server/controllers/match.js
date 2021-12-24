@@ -34,11 +34,14 @@ const getMatchList = (req, res) => {
 const addNewMatch = async (req, res) => {
     try {
         const { start_date, end_date, ground, teams, winner, loser, draw, tie, wickets,
-            innings, runs, margin } = req.body;
+            innings, runs, margin, neutral } = req.body;
         // get data from the view and add it to mongodb
         let query = {
             'start_date': start_date, 'end_date': end_date, 'ground': ground, 'teams': teams
         };
+        if(neutral) {
+            query = { ...query, ...{ 'neutral': neutral } };
+        }
         if (draw) {
             query = { ...query, ...{ 'draw': draw } };
         } else if (tie) {
@@ -120,6 +123,20 @@ const addNewMatch = async (req, res) => {
 //     console.log("Succes:", res);
 //     return res;
 // });
+
+// Match.find({}).exec(function(err,results) {
+//     results.forEach( function(x) {
+//         Match.updateOne({"_id": x._id}, {"$set": {"neutral": false }}).exec(function (err, res) {
+//             if (err) {
+//                 console.log(err);
+//                 return err;
+//             }
+//             console.log(res);
+//             return res;
+//         });
+//      });
+// });
+
 
 module.exports = {
     getMatchList,

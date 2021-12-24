@@ -10,7 +10,7 @@ import { LocalizationProvider, DatePicker } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { matchValidationSchema as validationSchema } from '../../helper/validationScehmas';
 import { Box, Button, TextField, Select, CheckBox, FormControl, InputLabel, MenuItem, ListItemText,
-  Divider, OutlinedInput, ListSubheader, FormHelperText, FormLabel, FormControlLabel, Radio, RadioGroup } from '../lib';
+  Divider, OutlinedInput, ListSubheader, FormHelperText, FormLabel, FormControlLabel, Radio, RadioGroup, FormGroup, Switch } from '../lib';
 
 
 const initialValues = {
@@ -20,6 +20,7 @@ const initialValues = {
   teams: [],
   winner: '',
   loser: '',
+  neutral: false,
   draw: false,
   tie: false,
   innings: false,
@@ -58,12 +59,13 @@ export const AddNewMatch = () => {
       let apiURL = '';
       let request = {};
       apiURL = ADD_NEW_MATCH_URL;
-      const { start_date, end_date, ground, teams, winner, margin } = formik.values;
+      const { start_date, end_date, ground, teams, winner, margin, neutral } = formik.values;
       request = {
         start_date,
         end_date,
         ground,
-        teams
+        teams,
+        neutral
       };
       if (['draw', 'tie'].includes(outcomeValue)) {
         request = { ...request, [outcomeValue]: true };
@@ -209,6 +211,16 @@ export const AddNewMatch = () => {
             ))}
           </Select>
           <FormHelperText>{formik.touched.teams && formik.errors.teams}</FormHelperText>
+        </FormControl>
+        <FormControl component="fieldset" sx={{ m: 2, width: 350 }}>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Switch checked={formik.values.neutral} onChange={formik.handleChange} name="neutral" />
+              }
+              label="Neutral"
+            />
+          </FormGroup>
         </FormControl>
         { formik.values.teams.length === 2 ?
         <React.Fragment>
