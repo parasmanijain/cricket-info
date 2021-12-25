@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@mui/styles';
 import { useTheme } from '@mui/material/styles';
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination,
-  TableRow, Typography } from '../lib';
+  TableRow } from '../lib';
 import { axiosConfig } from '../../helper';
 import { GET_MATCHES_URL } from '../../helper/config';
 import { IconButton } from '@mui/material';
@@ -175,21 +175,18 @@ export const Home = () => {
     }, {});
     const teams = Object.entries(group);
     return (teams.map((team:{}, index) => (
-      <Typography key={index} sx={{ border: 'none' }}>
-        <Typography component="span">
-          {team[0] + ' '}
-        </Typography>
-        <Typography component="span">
-          {
-            team[1].map((e, i, arr)=> {
-              return <React.Fragment key={i}>
-                <Typography component="span">{e.runs} {e.wickets<10 ? '/' + e.wickets : null } {e.declared ? 'd' : e.allout && e.wickets<9 ?
-              '(allout)' ? e.follow_on ? 'f/o' : null : null : null}</Typography>
-                {i===0 && arr.length> 1 ? ' & ': null}
-              </React.Fragment>;
-            }
-            )}</Typography>
-      </Typography>
+      <Box key={index}>
+        {team[0] + ' '}
+        {
+          team[1].map((e, i, arr)=> {
+            return <React.Fragment key={i}>
+              {e.runs}{e.wickets<10 ? '/' + e.wickets : null } {e.declared ? 'd' : e.allout && e.wickets<9 ?
+              '(allout)' ? e.follow_on ? 'f/o' : null : null : null}
+              {i===0 && arr.length> 1 ? '& ': null}
+            </React.Fragment>;
+          }
+          )}
+      </Box>
     )));
   };
 
@@ -212,7 +209,7 @@ export const Home = () => {
             {renderTeams(row.teams)}</TableCell>
           <TableCell className={classes.cell} align="center">
             {row.ground.name}, {row.ground.city.name}, {row.ground.city.country.name}</TableCell>
-          <TableCell>{renderInnings(row.match_innings)}</TableCell>
+          <TableCell className={classes.cell} align="center">{renderInnings(row.match_innings)}</TableCell>
           <TableCell className={classes.cell} align="center" >
             {renderResult(row)}</TableCell>
         </TableRow>
