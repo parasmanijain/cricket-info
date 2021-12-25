@@ -128,7 +128,7 @@ export const Home = () => {
   const [count, setCount] = useState(1);
   const [total, setTotal] = useState(0);
   const [matchList, setMatchList] = useState([]);
-  const limit = 30;
+  const limit = 20;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage+1);
