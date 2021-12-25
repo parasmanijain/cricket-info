@@ -9,8 +9,15 @@ const getMatchList = (req, res) => {
         .limit(limit)
         .populate({
             path: 'ground',
-            populate: [{ path: 'city',  populate: [{ path: 'country' }] }]
+            populate: [{ path: 'city', populate: [{ path: 'country' }] }]
         })
+        .populate({ 
+            path: 'match_innings',
+            populate: {
+              path: 'team',
+              model: Team
+            } 
+         })
         .populate('teams')
         .populate('winner')
         .populate('loser')
@@ -34,15 +41,17 @@ const getMatchList = (req, res) => {
 const addNewMatch = async (req, res) => {
     try {
         const { start_date, end_date, ground, teams, winner, loser, draw, tie, wickets,
-            innings, runs, margin, neutral } = req.body;
-            const count = await Match.countDocuments();
-
+            innings, runs, margin, neutral, match_innings } = req.body;
+        const count = await Match.countDocuments();
+        match_innings.map(ele => {
+            Inning
+        });
         // get data from the view and add it to mongodb
         let query = {
             'start_date': start_date, 'end_date': end_date, 'ground': ground, 'teams': teams,
-            "number": count + 1
+            "match_innings": match_innings, "number": count + 1
         };
-        if(neutral) {
+        if (neutral) {
             query = { ...query, ...{ 'neutral': neutral } };
         }
         if (draw) {
@@ -78,10 +87,31 @@ const addNewMatch = async (req, res) => {
         operations = { ...operations, groundOperation };
         let bulkTeamOps;
         if (draw | tie) {
-             bulkTeamOps = newMatch.teams.map(doc => ({
+            bulkTeamOps = newMatch.teams.map(doc => ({
                 updateOne: {
                     filter: { _id: doc },
-                    update: { "$push": draw ? { "draws": newMatch._id } : { "ties": newMatch._id } },
+                    update: [
+                        {
+                            "$push": draw ? { "draws": newMatch._id } : { "ties": newMatch._id }
+                        },
+                        {
+                            "$set": {
+                                "highest": {
+                                    "$max": [
+                                        "$highest", ...((
+                                        newMatch.match_innings
+                                        .filter(el => el.team === doc))
+                                        .map(e => e.runs))
+                                    ]
+                                },
+                                "lowest": {
+                                    "$min": ["$lowest", ...((newMatch.match_innings
+                                        .filter(el => el.team === doc && (el.allout || el.declared)))
+                                        .map(e => e.runs))]
+                                }
+                            }
+                        }
+                    ],
                     upsert: true,
                     useFindAndModify: false
                 }
@@ -91,15 +121,55 @@ const addNewMatch = async (req, res) => {
                 {
                     updateOne: {
                         filter: { _id: newMatch.winner },
-                        update: { "$push": { "wins": newMatch._id } },
+                        update: [
+                            {
+                                "$push": { "wins": newMatch._id }
+                            },
+                            {
+                                "$set": {
+                                    "highest": {
+                                        "$max": ["$highest", ...((
+                                            newMatch.match_innings
+                                            .filter(el => el.team === newMatch.winner))
+                                            .map(e => e.runs))]
+                                    },
+                                    "lowest": {
+                                        "$min": ["$lowest", ...((
+                                            newMatch.match_innings
+                                            .filter(el => el.team === newMatch.winner && (el.allout || el.declared)))
+                                            .map(e => e.runs))]
+                                    }
+                                }
+                            }
+                        ],
                         upsert: true,
                         useFindAndModify: false
                     }
-            }];
+                }];
             const bulkLoserOps = [{
                 updateOne: {
                     filter: { _id: newMatch.loser },
-                    update: { "$push": { "losses": newMatch._id } },
+                    update: [
+                        {
+                            "$push": { "losses": newMatch._id }
+                        },
+                        {
+                            "$set": {
+                                "highest": {
+                                    "$max": ["$highest", ...((
+                                        newMatch.match_innings
+                                        .filter(el => el.team === newMatch.loser))
+                                        .map(e => e.runs))]
+                                },
+                                "lowest": {
+                                    "$min": ["$lowest", ...((
+                                        newMatch.match_innings
+                                        .filter(el => el.team === newMatch.loser && (el.allout || el.declared)))
+                                        .map(e => e.runs))]
+                                }
+                            }
+                        }
+                    ],
                     upsert: true,
                     useFindAndModify: false
                 }
@@ -107,9 +177,9 @@ const addNewMatch = async (req, res) => {
             bulkTeamOps = [...bulkWinnerOps, ...bulkLoserOps];
         }
         const teamOperation = Team.bulkWrite(bulkTeamOps)
-                .then(bulkWriteOpResult => console.log('Team BULK update OK:', bulkWriteOpResult))
-                .catch(console.error.bind(console, 'Team BULK update error:'));
-            operations = { ...operations, teamOperation };
+            .then(bulkWriteOpResult => console.log('Team BULK update OK:', bulkWriteOpResult))
+            .catch(console.error.bind(console, 'Team BULK update error:'));
+        operations = { ...operations, teamOperation };
         let [someResult, anotherResult] = await Promise.all(operations
         )
         return res.status(200).json({ someResult, anotherResult });

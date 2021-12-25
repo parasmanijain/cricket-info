@@ -84,6 +84,8 @@ export const Team = () => {
                 <TableCell className={`${classes.cell} ${classes.header}`}>Losses</TableCell>
                 <TableCell className={`${classes.cell} ${classes.header}`}>Draws</TableCell>
                 <TableCell className={`${classes.cell} ${classes.header}`}>Ties</TableCell>
+                <TableCell className={`${classes.cell} ${classes.header}`}>Highest Score</TableCell>
+                <TableCell className={`${classes.cell} ${classes.header}`}>Lowest Score</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -101,6 +103,8 @@ export const Team = () => {
                   <TableCell className={classes.cell} >{row.losses}</TableCell>
                   <TableCell className={classes.cell} >{row.draws}</TableCell>
                   <TableCell className={classes.cell} >{row.ties}</TableCell>
+                  <TableCell className={classes.cell} >{row.highest}</TableCell>
+                  <TableCell className={classes.cell} >{row.lowest}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

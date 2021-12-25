@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@mui/styles';
 import { useTheme } from '@mui/material/styles';
-import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from '../lib';
+import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination,
+  TableRow, Typography } from '../lib';
 import { axiosConfig } from '../../helper';
 import { GET_MATCHES_URL } from '../../helper/config';
 import { IconButton } from '@mui/material';
@@ -163,6 +164,108 @@ export const Home = () => {
     return result;
   };
 
+  const renderInnings = (matchInnings) => {
+    const group = matchInnings.reduce((acc, item) => {
+      if (!acc[item.team.name]) {
+        acc[item.team.name] = [];
+      }
+
+      acc[item.team.name].push(item);
+      return acc;
+    }, {});
+    const teams = Object.entries(group);
+    return (teams.map((team:{}, index) => (
+      <Typography key={index} sx={{ border: 'none' }}>
+        <Typography component="span">
+          {team[0] + ' '}
+        </Typography>
+        <Typography component="span">
+          {
+            team[1].map((e, i, arr)=> {
+              return <React.Fragment key={i}>
+                <Typography component="span">{e.runs} {e.wickets<10 ? '/' + e.wickets : null } {e.declared ? 'd' : e.allout && e.wickets<9 ?
+              '(allout)' ? e.follow_on ? 'f/o' : null : null : null}</Typography>
+                {i===0 && arr.length> 1 ? ' & ': null}
+              </React.Fragment>;
+            }
+            )}</Typography>
+      </Typography>
+    )));
+  };
+
+  const Row = (props) => {
+    const { row } = props;
+    const [open, setOpen] = React.useState(false);
+    return (
+      <React.Fragment key={row._id}>
+        <TableRow
+          key={row._id}
+          className={classes.cell}
+          onClick={() => setOpen(!open)}
+          sx={{ backgroundColor: row.neutral ? '#F0E68C': 'transparent' }}
+        >
+          <TableCell className={classes.cell} align="left">{row.number}</TableCell>
+          <TableCell className={classes.cell} align="center"component="th" scope="row">
+            { renderDuration(row.start_date, row.end_date)}
+          </TableCell>
+          <TableCell className={classes.cell} align="center">
+            {renderTeams(row.teams)}</TableCell>
+          <TableCell className={classes.cell} align="center">
+            {row.ground.name}, {row.ground.city.name}, {row.ground.city.country.name}</TableCell>
+          <TableCell>{renderInnings(row.match_innings)}</TableCell>
+          <TableCell className={classes.cell} align="center" >
+            {renderResult(row)}</TableCell>
+        </TableRow>
+      </React.Fragment>
+    );
+  };
+
+  Row.propTypes = {
+    row: PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      number: PropTypes.number.isRequired,
+      start_date: PropTypes.string.isRequired,
+      end_date: PropTypes.string.isRequired,
+      teams: PropTypes.arrayOf(
+          PropTypes.shape({
+            name: PropTypes.string.isRequired
+          })),
+      ground: PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        city: PropTypes.shape({
+          name: PropTypes.string.isRequired,
+          country: PropTypes.shape({
+            name: PropTypes.string.isRequired
+          })
+        })
+      }),
+      neutral: PropTypes.bool,
+      innings: PropTypes.bool,
+      runs: PropTypes.bool,
+      wickets: PropTypes.bool,
+      margin: PropTypes.number,
+      winner: PropTypes.shape({
+        name: PropTypes.string.isRequired
+      }),
+      loser: PropTypes.shape({
+        name: PropTypes.string.isRequired
+      }),
+      match_innings: PropTypes.arrayOf(
+          PropTypes.shape({
+            number: PropTypes.number.isRequired,
+            runs: PropTypes.number.isRequired,
+            wickets: PropTypes.number.isRequired,
+            allout: PropTypes.bool,
+            declared: PropTypes.bool,
+            follow_on: PropTypes.bool,
+            team: PropTypes.shape({
+              name: PropTypes.string.isRequired
+            })
+          }))
+    }).isRequired
+  };
+
+
   const fetchData = () => {
     const topMovieUrl = axiosConfig.get(`${GET_MATCHES_URL}`, { params: { page: page, limit } });
     Promise.all([topMovieUrl]).then((responses) => {
@@ -192,29 +295,15 @@ export const Home = () => {
                 <TableCell className={`${classes.cell} ${classes.header}`} align="center">Duration</TableCell>
                 <TableCell className={`${classes.cell} ${classes.header}`} align="center">Teams</TableCell>
                 <TableCell className={`${classes.cell} ${classes.header}`} align="center">Ground</TableCell>
+                <TableCell className={`${classes.cell} ${classes.header}`} align="center">Scores</TableCell>
                 <TableCell className={`${classes.cell} ${classes.header}`} align="center">Result</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {
                 matchList
-                    .map((row, index) => (
-                      <TableRow
-                        key={row._id}
-                        className={classes.cell}
-                        sx={{ backgroundColor: row.neutral ? '#F0E68C': 'transparent' }}
-                      >
-                        <TableCell className={classes.cell} align="left">{row.number}</TableCell>
-                        <TableCell className={classes.cell} align="center"component="th" scope="row">
-                          { renderDuration(row.start_date, row.end_date)}
-                        </TableCell>
-                        <TableCell className={classes.cell} align="center">
-                          {renderTeams(row.teams)}</TableCell>
-                        <TableCell className={classes.cell} align="center">
-                          {row.ground.name}, {row.ground.city.name}, {row.ground.city.country.name}</TableCell>
-                        <TableCell className={classes.cell} align="center" >
-                          {renderResult(row)}</TableCell>
-                      </TableRow>
+                    .map((row) => (
+                      <Row key={row._id} row={row} />
                     ))}
             </TableBody>
           </Table>

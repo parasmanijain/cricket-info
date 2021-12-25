@@ -17,8 +17,10 @@ import { Switch } from './Switch';
 import { Tab } from './Tab';
 import { TableCell } from './TableCell';
 import { TextField } from './TextField';
+import { Typography } from './Typography';
 
 export {
   Box, Button, TextField, Tab, Progress, CheckBox, OutlinedInput, Select, FormHelperText, InputLabel,
-  ListItemText, Divider, ListSubheader, Switch, FormLabel, FormControlLabel, Radio, TableCell, Pagination
+  ListItemText, Divider, ListSubheader, Switch, FormLabel, FormControlLabel, Radio, TableCell, Pagination,
+  Typography
 };

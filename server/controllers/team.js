@@ -24,7 +24,8 @@ const getTeamStatistics = (req, res) => {
                     ties: { $size: "$ties" },
                     total: { $add: [{ $size: "$wins"}, { $size: "$losses" },{ $size: "$draws" }, { $size: "$ties" }]},
                     matches: { $concatArrays: ["$wins", "$losses", "$draws", "$ties"] },
-
+                    highest:1,
+                    lowest:1
                 }
             },
             {
@@ -70,7 +71,9 @@ const getTeamStatistics = (req, res) => {
                                 }
                             }
                         }
-                    }
+                    },
+                    highest:1,
+                    lowest:1
                 }
             },
             {
@@ -104,6 +107,15 @@ const addNewTeam = (req, res) => {
         return res.send('New Team Succesfully added.');
     });
 }
+
+// Team.syncIndexes(function (err, res) {
+//     if (err) {
+//         console.log("Error", err);
+//         return err;
+//     }
+//     console.log("Succes:", res);
+//     return res;
+// });
 
 module.exports = {
     getTeamList,
