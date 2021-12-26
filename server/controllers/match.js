@@ -1,8 +1,8 @@
 const { Match, Ground, Team } = require('../models/schemaModel');
-
+const mongoose = require('mongoose');
 const getMatchList = (req, res) => {
     let page = parseInt(req.query.page) || 1;
-    let limit = parseInt(req.query.limit) || 20;
+    let limit = parseInt(req.query.limit) || 17;
     // get data from the view and add it to mongodb
     Match.find({}, null, { sort: { start_date: 1 } })
         .skip((page - 1) * limit)
@@ -196,20 +196,6 @@ const addNewMatch = async (req, res) => {
 //     console.log("Succes:", res);
 //     return res;
 // });
-
-// Match.find({}).exec(function(err,results) {
-//     results.forEach(function(x, index) {
-//         Match.updateOne({"_id": x._id}, {"$set": {"number": index+1 }}).exec(function (err, res) {
-//             if (err) {
-//                 console.log(err);
-//                 return err;
-//             }
-//             console.log(res);
-//             return res;
-//         });
-//      });
-// });
-
 
 module.exports = {
     getMatchList,

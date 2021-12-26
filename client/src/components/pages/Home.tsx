@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 
   },
   paper: {
-    width: '75%',
+    width: '80%',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -128,7 +128,7 @@ export const Home = () => {
   const [count, setCount] = useState(1);
   const [total, setTotal] = useState(0);
   const [matchList, setMatchList] = useState([]);
-  const limit = 20;
+  const limit = 17;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage+1);
@@ -166,11 +166,11 @@ export const Home = () => {
 
   const renderInnings = (matchInnings) => {
     const group = matchInnings.reduce((acc, item) => {
-      if (!acc[item.team.name]) {
-        acc[item.team.name] = [];
+      if (!acc[item.team?.name]) {
+        acc[item.team?.name] = [];
       }
 
-      acc[item.team.name].push(item);
+      acc[item.team?.name].push(item);
       return acc;
     }, {});
     const teams = Object.entries(group);
@@ -180,9 +180,9 @@ export const Home = () => {
         {
           team[1].map((e, i, arr)=> {
             return <React.Fragment key={i}>
-              {e.runs}{e.wickets<10 ? '/' + e.wickets : null } {e.declared ? 'd' : e.allout && e.wickets<9 ?
-              '(allout)' ? e.follow_on ? 'f/o' : null : null : null}
-              {i===0 && arr.length> 1 ? '& ': null}
+              {e.runs}{e.wickets<10 ? '/' + e.wickets : null }{e.declared ? 'd':null}{e.allout && e.wickets<10 ?
+              ' (all out)' : null} {e.follow_on ? ' (f/o)' : null}
+              {i===0 && arr.length> 1 ? ' & ': null}
             </React.Fragment>;
           }
           )}
