@@ -21,11 +21,10 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
     boxSizing: 'border-box',
-    padding: '4px'
-
+    padding: '12px'
   },
   paper: {
-    width: '80%',
+    width: '85%',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -36,9 +35,11 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 400
   },
   cell: {
-    height: '12px',
     padding: '4px',
-    border: '1px solid black'
+    border: '1px solid black',
+    boxSizing: 'border-box',
+    height: '40px',
+    lineHeight: 'unset'
   },
   header: {
     fontWeight: 700
@@ -128,7 +129,7 @@ export const Home = () => {
   const [count, setCount] = useState(1);
   const [total, setTotal] = useState(0);
   const [matchList, setMatchList] = useState([]);
-  const limit = 17;
+  const limit = 20;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage+1);
@@ -175,7 +176,7 @@ export const Home = () => {
     }, {});
     const teams = Object.entries(group);
     return (teams.map((team:{}, index) => (
-      <Box key={index}>
+      <Box key={index} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} >
         {team[0] + ' '}
         {
           team[1].map((e, i, arr)=> {
@@ -201,8 +202,8 @@ export const Home = () => {
           onClick={() => setOpen(!open)}
           sx={{ backgroundColor: row.neutral ? '#F0E68C': 'transparent' }}
         >
-          <TableCell className={classes.cell} align="left">{row.number}</TableCell>
-          <TableCell className={classes.cell} align="center"component="th" scope="row">
+          <TableCell className={classes.cell} align="center">{row.number}</TableCell>
+          <TableCell className={classes.cell} align="center">
             { renderDuration(row.start_date, row.end_date)}
           </TableCell>
           <TableCell className={classes.cell} align="center">
@@ -288,7 +289,7 @@ export const Home = () => {
           <Table aria-label="simple table">
             <TableHead>
               <TableRow className={classes.cell}>
-                <TableCell className={`${classes.cell} ${classes.header}`} align="left">Match #</TableCell>
+                <TableCell className={`${classes.cell} ${classes.header}`} align="center">Match #</TableCell>
                 <TableCell className={`${classes.cell} ${classes.header}`} align="center">Duration</TableCell>
                 <TableCell className={`${classes.cell} ${classes.header}`} align="center">Teams</TableCell>
                 <TableCell className={`${classes.cell} ${classes.header}`} align="center">Ground</TableCell>
