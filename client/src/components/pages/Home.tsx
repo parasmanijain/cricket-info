@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     padding: '12px'
   },
   paper: {
-    width: '85%',
+    width: '90%',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -39,10 +39,20 @@ const useStyles = makeStyles((theme) => ({
     border: '1px solid black',
     boxSizing: 'border-box',
     height: '40px',
-    lineHeight: 'unset'
+    lineHeight: 'unset',
+    textAlign: 'center'
   },
   header: {
     fontWeight: 700
+  },
+  number: {
+    width: '40px'
+  },
+  duration: {
+    width: '190px'
+  },
+  teams: {
+    width: '200px'
   },
   pagination: {
     minHeight: '24px', padding: '4px', border: '1px solid black', borderTop: 'none', boxSizing: 'border-box',
@@ -202,16 +212,16 @@ export const Home = () => {
           onClick={() => setOpen(!open)}
           sx={{ backgroundColor: row.neutral ? '#F0E68C': 'transparent' }}
         >
-          <TableCell className={classes.cell} align="center">{row.number}</TableCell>
-          <TableCell className={classes.cell} align="center">
+          <TableCell className={`${classes.cell} ${classes.number}`}>{row.number}</TableCell>
+          <TableCell className={`${classes.cell} ${classes.duration}`}>
             { renderDuration(row.start_date, row.end_date)}
           </TableCell>
-          <TableCell className={classes.cell} align="center">
+          <TableCell className={`${classes.cell} ${classes.teams}`}>
             {renderTeams(row.teams)}</TableCell>
-          <TableCell className={classes.cell} align="center">
+          <TableCell className={classes.cell}>
             {row.ground.name}, {row.ground.city.name}, {row.ground.city.country.name}</TableCell>
-          <TableCell className={classes.cell} align="center">{renderInnings(row.match_innings)}</TableCell>
-          <TableCell className={classes.cell} align="center" >
+          <TableCell className={classes.cell}>{renderInnings(row.match_innings)}</TableCell>
+          <TableCell className={classes.cell}>
             {renderResult(row)}</TableCell>
         </TableRow>
       </React.Fragment>
@@ -289,12 +299,12 @@ export const Home = () => {
           <Table aria-label="simple table">
             <TableHead>
               <TableRow className={classes.cell}>
-                <TableCell className={`${classes.cell} ${classes.header}`} align="center">Match #</TableCell>
-                <TableCell className={`${classes.cell} ${classes.header}`} align="center">Duration</TableCell>
-                <TableCell className={`${classes.cell} ${classes.header}`} align="center">Teams</TableCell>
-                <TableCell className={`${classes.cell} ${classes.header}`} align="center">Ground</TableCell>
-                <TableCell className={`${classes.cell} ${classes.header}`} align="center">Scores</TableCell>
-                <TableCell className={`${classes.cell} ${classes.header}`} align="center">Result</TableCell>
+                <TableCell className={`${classes.cell} ${classes.header} ${classes.number}`}>Match #</TableCell>
+                <TableCell className={`${classes.cell} ${classes.header} ${classes.duration}`}>Duration</TableCell>
+                <TableCell className={`${classes.cell} ${classes.header} ${classes.teams}`} >Teams</TableCell>
+                <TableCell className={`${classes.cell} ${classes.header}`} >Ground</TableCell>
+                <TableCell className={`${classes.cell} ${classes.header}`} >Scores</TableCell>
+                <TableCell className={`${classes.cell} ${classes.header}`}>Result</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
