@@ -77,10 +77,11 @@ export const AddNewMatch = () => {
         start_date,
         end_date,
         ground,
-        teams,
-        neutral,
-        match_innings
+        teams
       };
+      if (neutral) {
+        request = { ...request, 'neutral': true };
+      }
       if (['draw', 'tie'].includes(outcomeValue)) {
         request = { ...request, [outcomeValue]: true };
       } else {
@@ -90,6 +91,22 @@ export const AddNewMatch = () => {
         const loser = teams.filter((ele)=> ele !== winner).join();
         request = { ...request, winner, loser, margin };
       }
+      const innings = [];
+      match_innings.forEach((inn)=> {
+        const { runs, wickets, allout, declared, follow_on } = inn;
+        let inning = {};
+        inning = { ...inning, 'runs': runs, 'wickets': wickets };
+        if (allout) {
+          inning = { ...inning, 'allout': allout };
+        } else if (declared) {
+          inning = { ...inning, 'declared': declared };
+        }
+        if (follow_on) {
+          inning = { ...inning, 'follow_on': follow_on };
+        }
+        innings.push(inning);
+      });
+      request = { ...request, 'match_innings': innings };
       axiosConfig.post(apiURL, request)
           .then(function(response) {
             resetForm();
@@ -294,32 +311,34 @@ export const AddNewMatch = () => {
                               InputProps={{ inputProps: { min: 0, max: 10 } }}
                             />
                           </FormControl>
+                          {
+                          formik.values.match_innings[index].wickets !== 10 ?
                           <FormControlLabel
                             control={
                               <Switch
                                 name={`match_innings[${index}].allout`}
-                                disabled={formik.values.match_innings[index].wickets === 10}
                                 checked={formik.values.match_innings[index].allout} onChange={formik.handleChange}/>
                             }
                             label="Allout"
-                          />
+                          /> : null
+                          }
+                          { index !==3 && formik.values.match_innings[index].wickets === 10 ?
                           <FormControlLabel
                             control={
                               <Switch
                                 name={`match_innings[${index}].declared`}
-                                disabled={formik.values.match_innings[index].wickets === 10}
                                 checked={formik.values.match_innings[index].declared} onChange={formik.handleChange}/>
                             }
                             label="Declared"
-                          />
-                          <FormControlLabel
+                          />: null}
+                          { index === 2 ? <FormControlLabel
                             control={
                               <Switch
                                 name={`match_innings[${index}].follow_on`}
                                 checked={formik.values.match_innings[index].follow_on} onChange={formik.handleChange}/>
                             }
                             label="Follow On"
-                          />
+                          /> : null}
                           <IconButton onClick={() => arrayHelpers.remove(index)} aria-label="delete"
                             disabled= {formik.values.match_innings.length === 1}>
                             <Delete />
