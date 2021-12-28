@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import React, { useState, useEffect } from 'react';
-import { useFormik } from 'formik';
+import { FieldArray, FormikProvider, useFormik } from 'formik';
 import * as _ from 'lodash';
 import enLocale from 'date-fns/locale/en-GB';
 import axiosConfig from '../../helper/axiosConfig';
@@ -27,7 +27,17 @@ const initialValues = {
   innings: false,
   runs: false,
   wickets: false,
-  margin: ''
+  margin: '',
+  match_innings: [
+    {
+      runs: 0,
+      wickets: 0,
+      allout: false,
+      declared: false,
+      follow_on: false,
+      team: ''
+    }
+  ]
 };
 
 export const AddNewMatch = () => {
@@ -60,13 +70,14 @@ export const AddNewMatch = () => {
       let apiURL = '';
       let request = {};
       apiURL = ADD_NEW_MATCH_URL;
-      const { start_date, end_date, ground, teams, winner, margin, neutral } = formik.values;
+      const { start_date, end_date, ground, teams, winner, margin, neutral, match_innings } = formik.values;
       request = {
         start_date,
         end_date,
         ground,
         teams,
-        neutral
+        neutral,
+        match_innings
       };
       if (['draw', 'tie'].includes(outcomeValue)) {
         request = { ...request, [outcomeValue]: true };
@@ -132,99 +143,182 @@ export const AddNewMatch = () => {
   };
 
   return (
-    <form id="form" onSubmit={formik.handleSubmit} autoComplete="off">
-      <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
-        <FormControl sx={{ m: 2, width: 350 }}>
-          <LocalizationProvider dateAdapter={AdapterDateFns} locale={enLocale}>
-            <DatePicker
-              label="Start Date"
-              minDate={new Date('3-15-1877')}
-              maxDate={ new Date()}
-              value={formik.values.start_date}
-              onChange={(newValue) => {
-                formik.setValues({ ...formik.values, start_date: (new Date(new Date(newValue).setUTCHours(0, 0, 0))) });
-              }}
-              renderInput={(params) => {
-                return <TextField {...params} />;
+    <FormikProvider value={formik}>
+      <form id="form" onSubmit={formik.handleSubmit} autoComplete="off">
+        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+          <FormControl sx={{ m: 2, width: 350 }}>
+            <LocalizationProvider dateAdapter={AdapterDateFns} locale={enLocale}>
+              <DatePicker
+                label="Start Date"
+                minDate={new Date('3-15-1877')}
+                maxDate={ new Date()}
+                value={formik.values.start_date}
+                onChange={(newValue) => {
+                  formik.setValues({ ...formik.values, start_date: (new Date(new Date(newValue).setUTCHours(0, 0, 0))) });
+                }}
+                renderInput={(params) => {
+                  return <TextField {...params} />;
+                }
+                }
+              />
+            </LocalizationProvider>
+          </FormControl>
+          <FormControl sx={{ m: 2, width: 350 }}>
+            <LocalizationProvider dateAdapter={AdapterDateFns} locale={enLocale}>
+              <DatePicker
+                label="End Date"
+                minDate={new Date(formik.values.start_date)}
+                maxDate={calcEndDate(formik.values.start_date, 15) }
+                value={formik.values.end_date}
+                onChange={(newValue) => {
+                  formik.setValues({ ...formik.values, end_date: (new Date(new Date(newValue).setUTCHours(0, 0, 0))) });
+                }}
+                renderInput={(params) => {
+                  return <TextField {...params} />;
+                }
+                }
+              />
+            </LocalizationProvider>
+          </FormControl>
+          <FormControl sx={{ m: 2, width: 570 }}>
+            <InputLabel id="ground-label">Ground</InputLabel>
+            <Select
+              labelId="ground-label"
+              id="ground"
+              name="ground"
+              value={formik.values.ground}
+              onChange={formik.handleChange}
+              error={formik.touched.ground && Boolean(formik.errors.ground)}
+              input={<OutlinedInput label="Ground" />}
+              MenuProps={MenuProps}
+            >
+              {makeSingleOptionItems([...groundData], 'cities', 'grounds')}
+            </Select>
+            <FormHelperText>{formik.touched.ground && formik.errors.ground}</FormHelperText>
+          </FormControl>
+          <FormControl sx={{ m: 2, width: 350 }}>
+            <InputLabel id="teams-multiple-checkbox-label">Teams</InputLabel>
+            <Select
+              labelId="teams-multiple-checkbox-label"
+              id="teams-multiple-checkbox"
+              multiple
+              name="teams"
+              value={formik.values.teams}
+              onChange={formik.handleChange}
+              error={formik.touched.teams && Boolean(formik.errors.teams)}
+              input={<OutlinedInput label="Teams" />}
+              renderValue={(selected: string[]) => {
+                const selectedTeams = ([...teamData].filter(
+                    (team) => selected.includes(team._id))).map((element) => element.name);
+                return selectedTeams.join(', ');
               }
               }
-            />
-          </LocalizationProvider>
-        </FormControl>
-        <FormControl sx={{ m: 2, width: 350 }}>
-          <LocalizationProvider dateAdapter={AdapterDateFns} locale={enLocale}>
-            <DatePicker
-              label="End Date"
-              minDate={new Date(formik.values.start_date)}
-              maxDate={calcEndDate(formik.values.start_date, 15) }
-              value={formik.values.end_date}
-              onChange={(newValue) => {
-                formik.setValues({ ...formik.values, end_date: (new Date(new Date(newValue).setUTCHours(0, 0, 0))) });
-              }}
-              renderInput={(params) => {
-                return <TextField {...params} />;
-              }
-              }
-            />
-          </LocalizationProvider>
-        </FormControl>
-        <FormControl sx={{ m: 2, width: 570 }}>
-          <InputLabel id="ground-label">Ground</InputLabel>
-          <Select
-            labelId="ground-label"
-            id="ground"
-            name="ground"
-            value={formik.values.ground}
-            onChange={formik.handleChange}
-            error={formik.touched.ground && Boolean(formik.errors.ground)}
-            input={<OutlinedInput label="Ground" />}
-            MenuProps={MenuProps}
-          >
-            {makeSingleOptionItems([...groundData], 'cities', 'grounds')}
-          </Select>
-          <FormHelperText>{formik.touched.ground && formik.errors.ground}</FormHelperText>
-        </FormControl>
-        <FormControl sx={{ m: 2, width: 350 }}>
-          <InputLabel id="teams-multiple-checkbox-label">Teams</InputLabel>
-          <Select
-            labelId="teams-multiple-checkbox-label"
-            id="teams-multiple-checkbox"
-            multiple
-            name="teams"
-            value={formik.values.teams}
-            onChange={formik.handleChange}
-            error={formik.touched.teams && Boolean(formik.errors.teams)}
-            input={<OutlinedInput label="Teams" />}
-            renderValue={(selected: string[]) => {
-              const selectedTeams = ([...teamData].filter(
-                  (team) => selected.includes(team._id))).map((element) => element.name);
-              return selectedTeams.join(', ');
-            }
-            }
-            MenuProps={MenuProps}
-          >
+              MenuProps={MenuProps}
+            >
 
-            {[...teamData].map((team) => (
-              <MenuItem key={team._id} value={team._id}>
-                <CheckBox checked={formik.values.teams.indexOf(team._id) > -1} />
-                <ListItemText primary={team.name} />
-              </MenuItem>
-            ))}
-          </Select>
-          <FormHelperText>{formik.touched.teams && formik.errors.teams}</FormHelperText>
-        </FormControl>
-        <FormControl component="fieldset" sx={{ m: 2, width: 350 }}>
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Switch checked={formik.values.neutral} onChange={formik.handleChange} name="neutral" />
-              }
-              label="Neutral"
-            />
-          </FormGroup>
-        </FormControl>
-        { formik.values.teams.length === 2 ?
+              {[...teamData].map((team) => (
+                <MenuItem key={team._id} value={team._id}>
+                  <CheckBox checked={formik.values.teams.indexOf(team._id) > -1} />
+                  <ListItemText primary={team.name} />
+                </MenuItem>
+              ))}
+            </Select>
+            <FormHelperText>{formik.touched.teams && formik.errors.teams}</FormHelperText>
+          </FormControl>
+          <FormControl component="fieldset" sx={{ m: 2, width: 350 }}>
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Switch checked={formik.values.neutral} onChange={formik.handleChange} name="neutral" />
+                }
+                label="Neutral"
+              />
+            </FormGroup>
+          </FormControl>
+          { formik.values.teams.length === 2 ?
         <React.Fragment>
+          <FormControl component="fieldset" sx={{ m: 2, width: '100%' }}>
+            <FieldArray
+              name="match_innings"
+              render={(arrayHelpers) => (
+                <div>
+                  {
+                    formik.values.match_innings.map((inning, index) => {
+                      return (
+                        <FormGroup key={index} sx= {{ display: 'flex', flexDirection: 'row' }}>
+                          <TextField
+                            sx={{ width: '80px', margin: '10px' }}
+                            id="runs"
+                            label= 'Runs'
+                            type="number"
+                            name={`match_innings[${index}].runs`}
+                            value={formik.values.match_innings[index].runs}
+                            onChange={formik.handleChange}
+                            error={formik.touched.match_innings && Boolean(formik.errors.match_innings)}
+                            helperText={formik.touched.match_innings && formik.errors.match_innings}
+                            InputProps={{ inputProps: { min: 0, max: 9999 } }}
+                          />
+                          <TextField
+                            sx={{ width: '80px', margin: '10px' }}
+                            id="wickets"
+                            label= 'Wickets'
+                            type="number"
+                            name={`match_innings[${index}].wickets`}
+                            value={formik.values.match_innings[index].wickets}
+                            onChange={formik.handleChange}
+                            error={formik.touched.match_innings && Boolean(formik.errors.match_innings)}
+                            helperText={formik.touched.match_innings &&
+                               (formik.errors.match_innings)}
+                            InputProps={{ inputProps: { min: 0, max: 10 } }}
+                          />
+                          <FormControlLabel
+                            control={
+                              <Switch
+                                name={`match_innings[${index}].allout`}
+                                checked={formik.values.match_innings[index].allout} onChange={formik.handleChange}/>
+                            }
+                            label="Allout"
+                          />
+                          <FormControlLabel
+                            control={
+                              <Switch
+                                name={`match_innings[${index}].declared`}
+                                checked={formik.values.match_innings[index].declared} onChange={formik.handleChange}/>
+                            }
+                            label="Declared"
+                          />
+                          <FormControlLabel
+                            control={
+                              <Switch
+                                name={`match_innings[${index}].follow_on`}
+                                checked={formik.values.match_innings[index].follow_on} onChange={formik.handleChange}/>
+                            }
+                            label="Follow On"
+                          />
+                          <button
+                            type="button"
+                            disabled= {formik.values.match_innings.length === 1}
+                            onClick={() => arrayHelpers.remove(index)}
+                          >
+               -
+                          </button>
+                        </FormGroup>
+                      );
+                    })
+                  }
+                  <button
+                    type="button"
+                    disabled= {formik.values.match_innings.length === 4}
+                    onClick={() => arrayHelpers.push({ allout: false, declared: false, follow_on: false, runs: 0, wickets: 0, team: '' })}
+                  >
+                +
+                  </button>
+                </div>
+              )}
+            />
+
+
+          </FormControl>
           <FormControl component="fieldset" sx={{ m: 2, width: 350 }}>
             <FormLabel component="legend">Outcome</FormLabel>
             <RadioGroup
@@ -291,11 +385,12 @@ export const AddNewMatch = () => {
        null}
         </React.Fragment> :
         null}
-        <Button color="primary" variant="contained" type="submit" sx={{ margin: 2, width: 300 }}>
+          <Button color="primary" variant="contained" type="submit" sx={{ margin: 2, width: 300 }}>
           Submit
-        </Button>
-      </Box>
-    </form>
+          </Button>
+        </Box>
+      </form>
+    </FormikProvider>
   );
 };
 
