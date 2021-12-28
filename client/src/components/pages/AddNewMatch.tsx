@@ -92,10 +92,10 @@ export const AddNewMatch = () => {
         request = { ...request, winner, loser, margin };
       }
       const innings = [];
-      match_innings.forEach((inn)=> {
-        const { runs, wickets, allout, declared, follow_on } = inn;
+      match_innings.forEach((inn, index)=> {
+        const { runs, wickets, allout, declared, follow_on, team } = inn;
         let inning = {};
-        inning = { ...inning, 'runs': runs, 'wickets': wickets };
+        inning = { ...inning, 'runs': runs, 'wickets': wickets, 'team': team };
         if (allout) {
           inning = { ...inning, 'allout': allout };
         } else if (declared) {
@@ -104,6 +104,7 @@ export const AddNewMatch = () => {
         if (follow_on) {
           inning = { ...inning, 'follow_on': follow_on };
         }
+        inning = { ...inning, 'number': index+1 };
         innings.push(inning);
       });
       request = { ...request, 'match_innings': innings };
@@ -322,7 +323,7 @@ export const AddNewMatch = () => {
                             label="Allout"
                           /> : null
                           }
-                          { index !==3 && formik.values.match_innings[index].wickets === 10 ?
+                          { index !==3 && formik.values.match_innings[index].wickets !== 10 ?
                           <FormControlLabel
                             control={
                               <Switch

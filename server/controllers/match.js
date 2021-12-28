@@ -11,13 +11,13 @@ const getMatchList = (req, res) => {
             path: 'ground',
             populate: [{ path: 'city', populate: [{ path: 'country' }] }]
         })
-        .populate({ 
+        .populate({
             path: 'match_innings',
             populate: {
-              path: 'team',
-              model: Team
-            } 
-         })
+                path: 'team',
+                model: Team
+            }
+        })
         .populate('teams')
         .populate('winner')
         .populate('loser')
@@ -43,9 +43,6 @@ const addNewMatch = async (req, res) => {
         const { start_date, end_date, ground, teams, winner, loser, draw, tie, wickets,
             innings, runs, margin, neutral, match_innings } = req.body;
         const count = await Match.countDocuments();
-        match_innings.map(ele => {
-            Inning
-        });
         // get data from the view and add it to mongodb
         let query = {
             'start_date': start_date, 'end_date': end_date, 'ground': ground, 'teams': teams,
@@ -85,23 +82,44 @@ const addNewMatch = async (req, res) => {
             .then(bulkWriteOpResult => console.log('Ground BULK update OK:', bulkWriteOpResult))
             .catch(console.error.bind(console, 'Ground BULK update error:'));
         operations = { ...operations, groundOperation };
-        let bulkTeamOps;
+        let bulkTeamOps, updateBlock;
         if (draw | tie) {
+            if (draw) {
+                updateBlock = {
+                    "draws": {
+                        "$concatArrays": [
+                            '$draws',
+                            [
+                                newMatch._id
+                            ],
+                        ],
+                    }
+                };
+            } else {
+                updateBlock  = {
+                    "ties": {
+                        "$concatArrays": [
+                            '$ties',
+                            [
+                                newMatch._id
+                            ],
+                        ],
+                    }
+                };
+            }
             bulkTeamOps = newMatch.teams.map(doc => ({
                 updateOne: {
                     filter: { _id: doc },
                     update: [
                         {
-                            "$push": draw ? { "draws": newMatch._id } : { "ties": newMatch._id }
-                        },
-                        {
                             "$set": {
+                                ...updateBlock,
                                 "highest": {
                                     "$max": [
                                         "$highest", ...((
-                                        newMatch.match_innings
-                                        .filter(el => el.team === doc))
-                                        .map(e => e.runs))
+                                            newMatch.match_innings
+                                                .filter(el => el.team === doc))
+                                            .map(e => e.runs))
                                     ]
                                 },
                                 "lowest": {
@@ -123,20 +141,25 @@ const addNewMatch = async (req, res) => {
                         filter: { _id: newMatch.winner },
                         update: [
                             {
-                                "$push": { "wins": newMatch._id }
-                            },
-                            {
                                 "$set": {
+                                    "wins": {
+                                        "$concatArrays": [
+                                            '$wins',
+                                            [
+                                                newMatch._id
+                                            ],
+                                        ],
+                                    },
                                     "highest": {
                                         "$max": ["$highest", ...((
                                             newMatch.match_innings
-                                            .filter(el => el.team === newMatch.winner))
+                                                .filter(el => el.team === newMatch.winner))
                                             .map(e => e.runs))]
                                     },
                                     "lowest": {
                                         "$min": ["$lowest", ...((
                                             newMatch.match_innings
-                                            .filter(el => el.team === newMatch.winner && (el.allout || el.declared)))
+                                                .filter(el => el.team === newMatch.winner && (el.allout || el.declared)))
                                             .map(e => e.runs))]
                                     }
                                 }
@@ -151,20 +174,25 @@ const addNewMatch = async (req, res) => {
                     filter: { _id: newMatch.loser },
                     update: [
                         {
-                            "$push": { "losses": newMatch._id }
-                        },
-                        {
                             "$set": {
+                                "losses": {
+                                    "$concatArrays": [
+                                        '$losses',
+                                        [
+                                            newMatch._id
+                                        ],
+                                    ],
+                                },
                                 "highest": {
                                     "$max": ["$highest", ...((
                                         newMatch.match_innings
-                                        .filter(el => el.team === newMatch.loser))
+                                            .filter(el => el.team === newMatch.loser))
                                         .map(e => e.runs))]
                                 },
                                 "lowest": {
                                     "$min": ["$lowest", ...((
                                         newMatch.match_innings
-                                        .filter(el => el.team === newMatch.loser && (el.allout || el.declared)))
+                                            .filter(el => el.team === newMatch.loser && (el.allout || el.declared)))
                                         .map(e => e.runs))]
                                 }
                             }
