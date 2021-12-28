@@ -96,10 +96,12 @@ export const AddNewMatch = () => {
         const { runs, wickets, allout, declared, follow_on, team } = inn;
         let inning = {};
         inning = { ...inning, 'runs': runs, 'wickets': wickets, 'team': team };
-        if (allout) {
-          inning = { ...inning, 'allout': allout };
-        } else if (declared) {
-          inning = { ...inning, 'declared': declared };
+        if (wickets!==10) {
+          if (allout) {
+            inning = { ...inning, 'allout': allout };
+          } else if (declared) {
+            inning = { ...inning, 'declared': declared };
+          }
         }
         if (follow_on) {
           inning = { ...inning, 'follow_on': follow_on };
