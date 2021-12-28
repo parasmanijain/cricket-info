@@ -8,10 +8,12 @@ import {
   ADD_NEW_MATCH_URL, GET_COUNTRY_GROUNDS_URL, GET_GROUNDS_URL, GET_TEAMS_URL, MenuProps
 } from '../../helper/config';
 import { LocalizationProvider, DatePicker } from '@mui/lab';
+import { Delete, AddCircleOutline } from '@mui/icons-material';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { matchValidationSchema as validationSchema } from '../../helper/validationScehmas';
 import { Box, Button, TextField, Select, CheckBox, FormControl, InputLabel, MenuItem, ListItemText,
-  Divider, OutlinedInput, ListSubheader, FormHelperText, FormLabel, FormControlLabel, Radio, RadioGroup, FormGroup, Switch } from '../lib';
+  Divider, OutlinedInput, ListSubheader, FormHelperText, FormLabel, FormControlLabel, Radio, RadioGroup,
+  FormGroup, Switch, IconButton } from '../lib';
 
 
 const initialValues = {
@@ -246,35 +248,57 @@ export const AddNewMatch = () => {
                     formik.values.match_innings.map((inning, index) => {
                       return (
                         <FormGroup key={index} sx= {{ display: 'flex', flexDirection: 'row' }}>
-                          <TextField
-                            sx={{ width: '80px', margin: '10px' }}
-                            id="runs"
-                            label= 'Runs'
-                            type="number"
-                            name={`match_innings[${index}].runs`}
-                            value={formik.values.match_innings[index].runs}
-                            onChange={formik.handleChange}
-                            error={formik.touched.match_innings && Boolean(formik.errors.match_innings)}
-                            helperText={formik.touched.match_innings && formik.errors.match_innings}
-                            InputProps={{ inputProps: { min: 0, max: 9999 } }}
-                          />
-                          <TextField
-                            sx={{ width: '80px', margin: '10px' }}
-                            id="wickets"
-                            label= 'Wickets'
-                            type="number"
-                            name={`match_innings[${index}].wickets`}
-                            value={formik.values.match_innings[index].wickets}
-                            onChange={formik.handleChange}
-                            error={formik.touched.match_innings && Boolean(formik.errors.match_innings)}
-                            helperText={formik.touched.match_innings &&
+                          <FormControl sx={{ m: 1, minWidth: 200 }}>
+                            <InputLabel id="team-label">Team</InputLabel>
+                            <Select
+                              id="team"
+                              labelId="team-label"
+                              name={`match_innings[${index}].team`}
+                              value={formik.values.match_innings[index].team}
+                              onChange={formik.handleChange}
+                              error={formik.touched.match_innings && Boolean(formik.errors.match_innings)}
+                              input={<OutlinedInput label="Team" />}
+                              MenuProps={MenuProps}
+                            >
+                              {[...teamData].filter((el)=> formik.values.teams.includes(el._id)).map((country) => (
+                                <MenuItem key={country._id} value={country._id}>
+                                  <ListItemText primary={country.name} />
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                          <FormControl sx={{ m: 1, minWidth: 80 }}>
+                            <TextField
+                              id="runs"
+                              label= 'Runs'
+                              type="number"
+                              name={`match_innings[${index}].runs`}
+                              value={formik.values.match_innings[index].runs}
+                              onChange={formik.handleChange}
+                              error={formik.touched.match_innings && Boolean(formik.errors.match_innings)}
+                              helperText={formik.touched.match_innings && formik.errors.match_innings}
+                              InputProps={{ inputProps: { min: 0, max: 9999 } }}
+                            />
+                          </FormControl>
+                          <FormControl sx={{ m: 1, minWidth: 80 }}>
+                            <TextField
+                              id="wickets"
+                              label= 'Wickets'
+                              type="number"
+                              name={`match_innings[${index}].wickets`}
+                              value={formik.values.match_innings[index].wickets}
+                              onChange={formik.handleChange}
+                              error={formik.touched.match_innings && Boolean(formik.errors.match_innings)}
+                              helperText={formik.touched.match_innings &&
                                (formik.errors.match_innings)}
-                            InputProps={{ inputProps: { min: 0, max: 10 } }}
-                          />
+                              InputProps={{ inputProps: { min: 0, max: 10 } }}
+                            />
+                          </FormControl>
                           <FormControlLabel
                             control={
                               <Switch
                                 name={`match_innings[${index}].allout`}
+                                disabled={formik.values.match_innings[index].wickets === 10}
                                 checked={formik.values.match_innings[index].allout} onChange={formik.handleChange}/>
                             }
                             label="Allout"
@@ -283,6 +307,7 @@ export const AddNewMatch = () => {
                             control={
                               <Switch
                                 name={`match_innings[${index}].declared`}
+                                disabled={formik.values.match_innings[index].wickets === 10}
                                 checked={formik.values.match_innings[index].declared} onChange={formik.handleChange}/>
                             }
                             label="Declared"
@@ -295,24 +320,20 @@ export const AddNewMatch = () => {
                             }
                             label="Follow On"
                           />
-                          <button
-                            type="button"
-                            disabled= {formik.values.match_innings.length === 1}
-                            onClick={() => arrayHelpers.remove(index)}
-                          >
-               -
-                          </button>
+                          <IconButton onClick={() => arrayHelpers.remove(index)} aria-label="delete"
+                            disabled= {formik.values.match_innings.length === 1}>
+                            <Delete />
+                          </IconButton>
                         </FormGroup>
                       );
                     })
                   }
-                  <button
-                    type="button"
-                    disabled= {formik.values.match_innings.length === 4}
+                  <IconButton
                     onClick={() => arrayHelpers.push({ allout: false, declared: false, follow_on: false, runs: 0, wickets: 0, team: '' })}
-                  >
-                +
-                  </button>
+                    aria-label="delete"
+                    disabled= {formik.values.match_innings.length === 4}>
+                    <AddCircleOutline />
+                  </IconButton>
                 </div>
               )}
             />
@@ -352,7 +373,7 @@ export const AddNewMatch = () => {
                 </MenuItem>
               ))}
             </Select>
-            <FormHelperText>{formik.touched.ground && formik.errors.ground}</FormHelperText>
+            <FormHelperText>{formik.touched.winner && formik.errors.winner}</FormHelperText>
           </FormControl>
           <FormControl component="fieldset" sx={{ m: 2, width: 350 }}>
             <FormLabel component="legend">Margin</FormLabel>
