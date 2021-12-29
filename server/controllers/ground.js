@@ -44,11 +44,10 @@ const addNewGround = async (req, res) => {
                 useFindAndModify: false
             }
         }];
-        let [someResult, anotherResult] = await Promise.all(City.bulkWrite(bulkCityOps)
+       let cityOperation = City.bulkWrite(bulkCityOps)
             .then(bulkWriteOpResult => console.log('City BULK update OK:', bulkWriteOpResult))
-            .catch(console.error.bind(console, 'City BULK update error:'))
-        )
-        return res.status(200).json({ someResult, anotherResult });
+            .catch(console.error.bind(console, 'City BULK update error:'));
+            return res.status(200).json({"message": 'Records updated succesfully'});
     }
 
     catch (err) {

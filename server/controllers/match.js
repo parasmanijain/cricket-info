@@ -78,10 +78,9 @@ const addNewMatch = async (req, res) => {
                 useFindAndModify: false
             }
         }];
-        const groundOperation = Ground.bulkWrite(bulkGroundOps)
+        const groundOperation = await Ground.bulkWrite(bulkGroundOps)
             .then(bulkWriteOpResult => console.log('Ground BULK update OK:', bulkWriteOpResult))
             .catch(console.error.bind(console, 'Ground BULK update error:'));
-        operations = { ...operations, groundOperation };
         let bulkTeamOps, updateBlock;
         if (draw | tie) {
             if (draw) {
@@ -96,7 +95,7 @@ const addNewMatch = async (req, res) => {
                     }
                 };
             } else {
-                updateBlock  = {
+                updateBlock = {
                     "ties": {
                         "$concatArrays": [
                             '$ties',
@@ -204,13 +203,10 @@ const addNewMatch = async (req, res) => {
             }]
             bulkTeamOps = [...bulkWinnerOps, ...bulkLoserOps];
         }
-        const teamOperation = Team.bulkWrite(bulkTeamOps)
+        const teamOperation = await Team.bulkWrite(bulkTeamOps)
             .then(bulkWriteOpResult => console.log('Team BULK update OK:', bulkWriteOpResult))
             .catch(console.error.bind(console, 'Team BULK update error:'));
-        operations = { ...operations, teamOperation };
-        let [someResult, anotherResult] = await Promise.all(operations
-        )
-        return res.status(200).json({ someResult, anotherResult });
+        return res.status(200).json({"message": 'Records updated succesfully'});
     } catch (err) {
         return res.status(400).json(err);
     }
