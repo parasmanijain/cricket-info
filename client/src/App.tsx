@@ -14,9 +14,19 @@ interface PublicRouteProps extends RouteProps {
   path:any;
 }
 
+const currentTab = () => {
+  if (process.env.NODE_ENV === 'production') {
+    const route = routes.find((ele)=> ele.path=== window.location.pathname);
+    if (route && !route.production) {
+      return '/';
+    }
+  }
+  return window.location.pathname;
+};
+
 export const App = () => {
   const [environment] = useState((process.env.NODE_ENV));
-  const [value, setValue] = useState(window.location.pathname);
+  const [value, setValue] = useState(currentTab());
 
   const renderTabs = (label, value, index) => <Tab key={index} value={value} label={label} component={Link} to={value}/>;
 
