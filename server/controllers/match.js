@@ -1,5 +1,4 @@
 const { Match, Ground, Team } = require('../models/schemaModel');
-const mongoose = require('mongoose');
 const getMatchList = (req, res) => {
     let page = parseInt(req.query.page) || 1;
     let limit = parseInt(req.query.limit) || 20;

@@ -30,7 +30,6 @@ const getCountryCityList = (req, res) => {
 
                         },
                         { "$sort": { "name": 1 } }
-
                     ]
                 }
             }, {
@@ -57,13 +56,62 @@ const getCountryCityList = (req, res) => {
 };
 
 const getCountryGroundList = (req, res) => {
-    // get data from the view and add it to mongodb
-    Country.find({}, null, { sort: { name: 1 } })
-        .populate({ path: 'cities', options: { sort: { 'name': 1 } }, populate: [{ path: 'grounds', options: { sort: { 'name': 1 } } }] })
-        .exec(function (err, results) {
+    Country.aggregate(
+        [
+            {
+                "$lookup": {
+                    "from": 'cities',
+                    "let": { "cities": "$cities" },
+                    "as": 'cities',
+                    "pipeline": [
+                        {
+                            "$match": { "$expr": { "$in": ["$_id", "$$cities"] } }
+                        },
+                        {
+                            "$lookup": {
+                                "from": "grounds",
+                                "let": { "grounds": "$grounds" },
+                                "pipeline": [
+                                    { "$match": { "$expr": { "$in": ["$_id", "$$grounds"] } } },
+                                    { "$sort": { "name": 1 } }
+                                ],
+                                "as": "grounds"
+                            }
+                        },
+                        { "$sort": { "name": 1 } }
+
+                    ]
+                }
+            }, {
+                "$project": {
+                    "name": 1,
+                    "cities": {
+                        "$map": {
+                            "input": "$cities",
+                            "as": "c",
+                            "in": {
+                                "name": "$$c.name",
+                                "grounds": {
+                                    "$map": {
+                                        "input": "$$c.grounds",
+                                        "as": "g",
+                                        "in": {
+                                            "name": "$$g.name",
+                                            "_id": "$$g._id"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            { "$sort": { "name": 1 } }
+        ],
+        function (err, results) {
             if (err) return res.send(500, { error: err });
             return res.send(results);
-        });
+        })
 };
 
 const getCountryGroundCount = (req, res) => {

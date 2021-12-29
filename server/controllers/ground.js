@@ -10,19 +10,6 @@ const getGroundList = (req, res) => {
     });
 };
 
-// Ground.find({"matches":{ $exists:false }}).exec(function(err,results) {
-//     results.forEach( function(x) {
-//         Ground.updateOne({"_id": x._id}, {"$set": {"matches": [] }}).exec(function (err, res) {
-//             if (err) {
-//                 console.log(err);
-//                 return err;
-//             }
-//             console.log(res);
-//             return res;
-//         });
-//      });
-// });
-
 const addNewGround = async (req, res) => {
     try {
         const { name, city, matches } = req.body;

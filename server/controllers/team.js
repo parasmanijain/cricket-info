@@ -2,11 +2,17 @@ const { Team } = require('../models/schemaModel');
 
 const getTeamList = (req, res) => {
     // get data from the view and add it to mongodb
-    Team.find({}, null, { sort: { name: 1 } })
-        .exec(function (err, results) {
-            if (err) return res.send(500, { error: err });
-            return res.send(results);
-        });
+    Team.aggregate([
+        {
+            "$project": {
+                name:1
+            }
+        }
+    ],
+    function (err, results) {
+        if (err) return res.send(500, { error: err });
+        return res.send(results);
+    })
 };
 
 const getTeamStatistics = (req, res) => {
