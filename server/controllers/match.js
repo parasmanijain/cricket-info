@@ -123,7 +123,7 @@ const addNewMatch = async (req, res) => {
                                 },
                                 "lowest": {
                                     "$min": ["$lowest", ...((newMatch.match_innings
-                                        .filter(el => el.team.equals(doc) && (el.allout || el.declared)))
+                                        .filter(el => el.team.equals(doc) && (el.wickets === 10 || el.allout || el.declared)))
                                         .map(e => e.runs))]
                                 }
                             }
@@ -191,7 +191,7 @@ const addNewMatch = async (req, res) => {
                                 "lowest": {
                                     "$min": ["$lowest", ...((
                                         newMatch.match_innings
-                                            .filter(el => el.team.equals(newMatch.loser) && (el.allout || el.declared)))
+                                            .filter(el => el.team.equals(newMatch.loser) && (el.wickets === 10 || el.allout || el.declared)))
                                         .map(e => e.runs))]
                                 }
                             }
@@ -206,7 +206,7 @@ const addNewMatch = async (req, res) => {
         const teamOperation = await Team.bulkWrite(bulkTeamOps)
             .then(bulkWriteOpResult => console.log('Team BULK update OK:', bulkWriteOpResult))
             .catch(console.error.bind(console, 'Team BULK update error:'));
-        return res.status(200).json({"message": 'Records updated succesfully'});
+        return res.status(200).json({ "message": 'Records updated succesfully' });
     } catch (err) {
         return res.status(400).json(err);
     }
