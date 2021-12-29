@@ -118,13 +118,13 @@ const addNewMatch = async (req, res) => {
                                     "$max": [
                                         "$highest", ...((
                                             newMatch.match_innings
-                                                .filter(el => el.team === doc))
+                                                .filter(el => el.team.equals(doc)))
                                             .map(e => e.runs))
                                     ]
                                 },
                                 "lowest": {
                                     "$min": ["$lowest", ...((newMatch.match_innings
-                                        .filter(el => el.team === doc && (el.allout || el.declared)))
+                                        .filter(el => el.team.equals(doc) && (el.allout || el.declared)))
                                         .map(e => e.runs))]
                                 }
                             }
@@ -153,13 +153,13 @@ const addNewMatch = async (req, res) => {
                                     "highest": {
                                         "$max": ["$highest", ...((
                                             newMatch.match_innings
-                                                .filter(el => el.team === newMatch.winner))
+                                                .filter(el => el.team.equals(newMatch.winner)))
                                             .map(e => e.runs))]
                                     },
                                     "lowest": {
                                         "$min": ["$lowest", ...((
                                             newMatch.match_innings
-                                                .filter(el => el.team === newMatch.winner && (el.allout || el.declared)))
+                                                .filter(el => el.team.equals(newMatch.winner) && (el.allout || el.declared)))
                                             .map(e => e.runs))]
                                     }
                                 }
@@ -186,13 +186,13 @@ const addNewMatch = async (req, res) => {
                                 "highest": {
                                     "$max": ["$highest", ...((
                                         newMatch.match_innings
-                                            .filter(el => el.team === newMatch.loser))
+                                            .filter(el => el.team.equals(newMatch.loser)))
                                         .map(e => e.runs))]
                                 },
                                 "lowest": {
                                     "$min": ["$lowest", ...((
                                         newMatch.match_innings
-                                            .filter(el => el.team === newMatch.loser && (el.allout || el.declared)))
+                                            .filter(el => el.team.equals(newMatch.loser) && (el.allout || el.declared)))
                                         .map(e => e.runs))]
                                 }
                             }
