@@ -82,10 +82,12 @@ const getCountryGroundCount = (req, res) => {
                                 "let": { "grounds": "$grounds" },
                                 "pipeline": [
                                     { "$match": { "$expr": { "$in": ["$_id", "$$grounds"] } } },
+                                    { "$sort": { "name": 1 } }
                                 ],
                                 "as": "grounds"
                             }
-                        }
+                        },
+                        { "$sort": { "name": 1 } }
                     ],
                     "as": "cities"
                 }
@@ -98,6 +100,7 @@ const getCountryGroundCount = (req, res) => {
                             "input": "$cities",
                             "as": "c",
                             "in": {
+                                "name": "$$c.name",
                                 "ground": {
                                     "$map": {
                                         "input": "$$c.grounds",

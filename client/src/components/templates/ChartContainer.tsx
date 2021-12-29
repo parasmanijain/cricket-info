@@ -26,8 +26,6 @@ export const ChartContainer = (props:any) => {
     if (apiData.length && title.toLowerCase().includes('grounds')) {
       const westIndiesData = apiData.filter((ele)=> westIndies.includes(ele.name));
       const otherCountriesData = apiData.filter((ele)=> !westIndies.includes(ele.name));
-      console.log(westIndiesData);
-      console.log(otherCountriesData);
       let data = [];
       let labels = [];
 
@@ -38,7 +36,7 @@ export const ChartContainer = (props:any) => {
         element.city.forEach((e1)=> {
           grounds+=e1.ground.length;
           e1.ground.forEach((e)=> {
-            labels.push(e.name);
+            labels.push(e.name+ ', ' + e1.name);
             data.push(e.length);
           });
         });
@@ -61,7 +59,7 @@ export const ChartContainer = (props:any) => {
         labels = [];
         element.city.forEach((e1)=> {
           e1.ground.forEach((e)=> {
-            labels.push(e.name);
+            labels.push(e.name+ ', ' + e1.name);
             data.push(e.length);
           });
         });
