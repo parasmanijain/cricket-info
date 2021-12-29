@@ -15,9 +15,8 @@ interface PublicRouteProps extends RouteProps {
 }
 
 export const App = () => {
-  const [selectedMovie, setSelectedMovie] = useState(null);
   const [environment] = useState((process.env.NODE_ENV));
-  const [value, setValue] = useState('/');
+  const [value, setValue] = useState(window.location.pathname);
 
   const renderTabs = (label, value, index) => <Tab key={index} value={value} label={label} component={Link} to={value}/>;
 
@@ -29,9 +28,6 @@ export const App = () => {
         <Route path={path} element = {<Component/>}/>
       </Route>);
     } else {
-      if (path === '/') {
-
-      }
       return (<Route key = {index} path={path} element = {<Component />}/>);
     }
   };
@@ -39,6 +35,7 @@ export const App = () => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
 
   return (
     <BrowserRouter>
