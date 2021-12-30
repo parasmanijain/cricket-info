@@ -114,6 +114,19 @@ const addNewTeam = (req, res) => {
     });
 }
 
+// Team.find({}).exec(function(err,results) {
+//     results.forEach( function(x) {
+//         Team.updateOne({"_id": x._id}, {"$set": {"players": [] }}).exec(function (err, res) {
+//             if (err) {
+//                 console.log(err);
+//                 return err;
+//             }
+//             console.log(res);
+//             return res;
+//         });
+//      });
+// });
+
 // Team.syncIndexes(function (err, res) {
 //     if (err) {
 //         console.log("Error", err);

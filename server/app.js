@@ -9,6 +9,7 @@ const city_controller = require('./controllers/city');
 const ground_controller = require('./controllers/ground');
 const team_controller = require('./controllers/team');
 const match_controller = require('./controllers/match');
+const player_controller = require('./controllers/player');
 
 app.get('/countries', country_controller.getCountryList);
 app.get('/countryGrounds', country_controller.getCountryGroundList);
@@ -28,6 +29,8 @@ app.post('/team', team_controller.addNewTeam);
 
 app.get('/matches', match_controller.getMatchList);
 app.post('/match', match_controller.addNewMatch);
+
+app.post('/player', player_controller.addNewPlayer);
 
 function setupCORS(req, res, next) {
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');

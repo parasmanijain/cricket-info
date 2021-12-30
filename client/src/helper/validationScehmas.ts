@@ -33,6 +33,15 @@ export const teamValidationSchema = yup.object({
       .required('Team is required')
 });
 
+export const playerValidationSchema = yup.object({
+  name: yup
+      .string()
+      .required('Team is required'),
+  team: yup
+      .array()
+      .required('Team is required')
+});
+
 export const matchValidationSchema = yup.object({
   start_date: yup
       .date()

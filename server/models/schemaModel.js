@@ -19,6 +19,7 @@ const groundSchema = new mongoose.Schema({
 
 const teamSchema = new mongoose.Schema({
     name: { type: String },
+    players:[{ type: mongoose.Schema.Types.ObjectId, ref: 'Player', required: true  }],
     wins: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Match' }],
     losses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Match' }],
     draws: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Match' }],
@@ -29,6 +30,7 @@ const teamSchema = new mongoose.Schema({
 
 const playerSchema = new mongoose.Schema({
     name: { type: String },
+    team:[{ type: mongoose.Schema.Types.ObjectId, ref: 'Team', required: true }],
     matches: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Match' }],
     batting: {
         innings: { type: Number },

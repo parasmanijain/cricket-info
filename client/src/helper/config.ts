@@ -3,6 +3,7 @@ export const ADD_NEW_CITY_URL = '/city';
 export const ADD_NEW_GROUND_URL = '/ground';
 export const ADD_NEW_TEAM_URL = '/team';
 export const ADD_NEW_MATCH_URL = '/match';
+export const ADD_NEW_PLAYER_URL = '/player';
 
 export const GET_COUNTRIES_URL = '/countries';
 export const GET_COUNTRY_GROUNDS_URL = '/countryGrounds';

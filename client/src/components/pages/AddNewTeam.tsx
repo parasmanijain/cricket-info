@@ -17,7 +17,8 @@ export const AddNewTeam = () => {
         wins: [],
         losses: [],
         draws: [],
-        ties: []
+        ties: [],
+        players: []
       })
           .then(function(response) {
             resetForm();
