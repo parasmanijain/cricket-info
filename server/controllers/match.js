@@ -17,7 +17,10 @@ const getMatchList = (req, res) => {
                 model: Team
             }
         })
-        .populate('teams')
+        .populate({ 
+            path: 'teams',
+            populate: [{ path: 'team' }]
+        })
         .populate('winner')
         .populate('loser')
         .exec(function (err, results) {
@@ -107,7 +110,7 @@ const addNewMatch = async (req, res) => {
             }
             bulkTeamOps = newMatch.teams.map(doc => ({
                 updateOne: {
-                    filter: { _id: doc },
+                    filter: { _id: doc.team },
                     update: [
                         {
                             "$set": {
@@ -116,13 +119,13 @@ const addNewMatch = async (req, res) => {
                                     "$max": [
                                         "$highest", ...((
                                             newMatch.match_innings
-                                                .filter(el => el.team.equals(doc)))
+                                                .filter(el => el.team.equals(doc.team)))
                                             .map(e => e.runs))
                                     ]
                                 },
                                 "lowest": {
                                     "$min": ["$lowest", ...((newMatch.match_innings
-                                        .filter(el => el.team.equals(doc) && (el.wickets === 10 || el.allout || el.declared)))
+                                        .filter(el => el.team.equals(doc.team) && (el.wickets === 10 || el.allout || el.declared)))
                                         .map(e => e.runs))]
                                 }
                             }

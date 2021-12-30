@@ -149,7 +149,7 @@ export const Home = () => {
   };
 
   const renderTeams = (teams) => {
-    return teams[0].name + ' v/s ' + teams[1].name;
+    return teams[0].team.name + ' v/s ' + teams[1].team.name;
   };
 
   const renderResult = ({ winner, loser, draw, tie, margin, innings, wickets, runs }) => {
@@ -232,7 +232,14 @@ export const Home = () => {
       end_date: PropTypes.string.isRequired,
       teams: PropTypes.arrayOf(
           PropTypes.shape({
-            name: PropTypes.string.isRequired
+            team: PropTypes.shape({
+              name: PropTypes.string.isRequired
+            }),
+            players: PropTypes.arrayOf(
+                PropTypes.shape({
+                  name: PropTypes.string.isRequired
+                })
+            )
           })),
       ground: PropTypes.shape({
         name: PropTypes.string.isRequired,

@@ -27,12 +27,37 @@ const teamSchema = new mongoose.Schema({
     lowest: { type: Number }
 });
 
+const playerSchema = new mongoose.Schema({
+    name: { type: String },
+    matches: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Match' }],
+    batting: {
+        innings: { type: Number },
+        runs_scored: { type: Number },
+        highest_score: { type: Number },
+        fifties: { type: Number },
+        hundreds: { type: Number },
+        double_hundreds: { type: Number }
+    },
+    bowling: {
+        innings: { type: Number },
+        wickets_taken: { type: Number },
+        runs_conceded: { type: Number },
+        best_figures: { type: String },
+        four_wickets_inning: { type: Number },
+        five_wickets_inning: { type: Number },
+        ten_wickets_match: { type: Number }
+    }
+});
+
 const matchSchema = new mongoose.Schema({
     number: { type: Number },
     start_date: { type: Date, required: true },
     end_date: { type: Date, required: true },
     ground: { type: mongoose.Schema.Types.ObjectId, ref: 'Ground', required: true },
-    teams: { type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Team', required: true }], validate: [(val) => val.length === 2, 'Must have two teams'] },
+    teams: [{
+        team: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', required: true },
+        players:[{ type: mongoose.Schema.Types.ObjectId, ref: 'Player', required: true  }]
+    }],
     neutral: { type: Boolean },
     match_innings: [{
         number: { type: Number },
@@ -41,7 +66,23 @@ const matchSchema = new mongoose.Schema({
         wickets: { type: Number },
         declared: { type: Boolean },
         allout: { type: Boolean },
-        follow_on: { type: Boolean }
+        follow_on: { type: Boolean },
+        batting: {
+            batters: [{
+                player: { type: mongoose.Schema.Types.ObjectId, ref: 'Player' },
+                runs: { type: Number }
+            }],
+            extras: { type: Number },
+            did_not_bat:[{ type: mongoose.Schema.Types.ObjectId, ref: 'Player' }]
+        },
+        bowling: {
+            bowlers: [{
+                player: { type: mongoose.Schema.Types.ObjectId, ref: 'Player' },
+                runs_conceded: { type: Number },
+                wickets_taken: { type: Number }
+            }],
+            did_not_bowl:[{ type: mongoose.Schema.Types.ObjectId, ref: 'Player' }]
+        }
     }],
     winner: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
     loser: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
@@ -61,5 +102,6 @@ module.exports = {
     City: mongoose.model('City', citySchema),
     Ground: mongoose.model('Ground', groundSchema),
     Team: mongoose.model('Team', teamSchema),
-    Match: mongoose.model('Match', matchSchema)
+    Match: mongoose.model('Match', matchSchema),
+    Player: mongoose.model('Player', playerSchema)
 }
