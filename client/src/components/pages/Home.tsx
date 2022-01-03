@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@mui/styles';
@@ -7,6 +8,7 @@ import { Box, IconButton, Paper, Table, TableBody, TableCell, TableContainer, Ta
   TableRow } from '../lib';
 import { axiosConfig } from '../../helper';
 import { GET_MATCHES_URL } from '../../helper/config';
+import { useNavigate } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -128,9 +130,15 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired
 };
 
+interface HomeProps {
+  handleMatchUpdateSelection:any;
+}
 
-export const Home = () => {
+
+export const Home = (props:HomeProps) => {
   const classes = useStyles();
+  const navigate = useNavigate();
+  const { handleMatchUpdateSelection } = props;
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(1);
   const [total, setTotal] = useState(0);
@@ -199,13 +207,15 @@ export const Home = () => {
 
   const Row = (props) => {
     const { row } = props;
-    const [open, setOpen] = React.useState(false);
     return (
       <React.Fragment key={row._id}>
         <TableRow
           key={row._id}
           className={classes.cell}
-          onClick={() => setOpen(!open)}
+          onClick={() => {
+            handleMatchUpdateSelection(row._id);
+            navigate('/add-new-match');
+          }}
           sx={{ backgroundColor: row.neutral ? '#F0E68C': 'transparent' }}
         >
           <TableCell className={`${classes.cell} ${classes.number}`}>{row.number}</TableCell>
@@ -313,7 +323,7 @@ export const Home = () => {
             <TableBody>
               {
                 matchList
-                    .map((row) => (
+                    .map((row:any) => (
                       <Row key={row._id} row={row} />
                     ))}
             </TableBody>

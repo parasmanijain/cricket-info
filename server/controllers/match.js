@@ -1,4 +1,5 @@
 const { Match, Ground, Team } = require('../models/schemaModel');
+
 const getMatchList = (req, res) => {
     let page = parseInt(req.query.page) || 1;
     let limit = parseInt(req.query.limit) || 20;
@@ -17,7 +18,7 @@ const getMatchList = (req, res) => {
                 model: Team
             }
         })
-        .populate({ 
+        .populate({
             path: 'teams',
             populate: [{ path: 'team' }]
         })
@@ -37,6 +38,32 @@ const getMatchList = (req, res) => {
                 });
             });
         });
+};
+
+const getMatchDetails = (req, res) => {
+    Match.findById(req.query.movieID)
+        .populate({
+            path: 'ground',
+            populate: [{ path: 'city', populate: [{ path: 'country' }] }]
+        })
+        .populate({
+            path: 'match_innings',
+            populate: {
+                path: 'team',
+                model: Team
+            }
+        })
+        .populate({
+            path: 'teams',
+            populate: [{ path: 'team' }]
+        })
+        .populate('winner')
+        .populate('loser')
+        .exec(function (err, movie) {
+            if (err) return res.send(500, { error: err });
+            return res.send(movie);
+        }
+        );
 };
 
 
@@ -225,5 +252,6 @@ const addNewMatch = async (req, res) => {
 
 module.exports = {
     getMatchList,
+    getMatchDetails,
     addNewMatch,
 };

@@ -28,6 +28,7 @@ app.get('/teamStatistics', team_controller.getTeamStatistics);
 app.post('/team', team_controller.addNewTeam);
 
 app.get('/matches', match_controller.getMatchList);
+app.get('/matchDetails', match_controller.getMatchDetails);
 app.post('/match', match_controller.addNewMatch);
 
 app.post('/player', player_controller.addNewPlayer);

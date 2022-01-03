@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import enLocale from 'date-fns/locale/en-GB';
 import axiosConfig from '../../helper/axiosConfig';
 import {
-  ADD_NEW_MATCH_URL, GET_COUNTRY_GROUNDS_URL, GET_GROUNDS_URL, GET_TEAMS_URL, MenuProps
+  ADD_NEW_MATCH_URL, GET_COUNTRY_GROUNDS_URL, GET_GROUNDS_URL, GET_MATCH_DETAILS_URL, GET_TEAMS_URL, MenuProps
 } from '../../helper/config';
 import { LocalizationProvider, DatePicker } from '@mui/lab';
 import { Delete, AddCircleOutline } from '@mui/icons-material';
@@ -37,22 +37,97 @@ const initialValues = {
       allout: false,
       declared: false,
       follow_on: false,
-      team: ''
+      team: '',
+      batting: {
+        batters: [],
+        did_not_bat: []
+      },
+      bowling: {
+        bowlers: [],
+        did_not_bowl: []
+      }
     }
   ]
 };
 
-export const AddNewMatch = () => {
+interface AddMatchProps {
+  selectedMatch?: string;
+}
+
+
+export const AddNewMatch = (props:AddMatchProps) => {
+  const { selectedMatch } = props;
   const [groundData, setGroundData] = useState([]);
   const [teamData, setTeamData] = useState([]);
   const [outcomeValue, setOutcomeValue] = React.useState(null);
   const [marginValue, setMarginValue] = React.useState(null);
+  const [existingValues, setExistingValues] = useState({});
+  const [, setSelectedMatchData] = useState(null);
+
   const fetchData = () => {
     const grounds = axiosConfig.get(`${GET_COUNTRY_GROUNDS_URL}`);
     const teams = axiosConfig.get(`${GET_TEAMS_URL}`);
     Promise.all([grounds, teams]).then((responses) => {
       setGroundData(responses[0].data);
       setTeamData(responses[1].data);
+      if (selectedMatch) {
+        fetchSelectedMatchDetails( responses[0].data, responses[1].data);
+      }
+    }).catch((errors) => {
+      console.log(errors);
+    });
+  };
+
+  const fetchSelectedMatchDetails = (groundList, teamList) => {
+    const selectedMatchDetails = axiosConfig.get(`${GET_MATCH_DETAILS_URL}`, { params: { movieID: selectedMatch } });
+    Promise.all([selectedMatchDetails]).then((responses) => {
+      if (responses[0].data) {
+        setSelectedMatchData(responses[0].data);
+        const { start_date, end_date, ground, teams, winner, loser, neutral, draw, tie,
+          innings, runs, wickets, margin, match_innings } = responses[0].data;
+        const teamValues = (teamList.filter((e)=>
+          ((teams.map((element) => element.team)).map((el)=> el._id)).includes(e._id))).map((elem)=> elem._id);
+        const groundValue = ((groundList.map((ele)=>
+          (ele.cities.map((e)=> e.grounds).flat()))).flat()).find((ele)=> ele._id === ground._id);
+        const matchInningsValues = match_innings.map((inning)=> {
+          return {
+            ...inning,
+            team: inning.team._id
+          };
+        });
+        if (draw) {
+          setOutcomeValue('draw');
+        } else if (tie) {
+          setOutcomeValue('tie');
+        } else {
+          setOutcomeValue('result');
+          if (innings) {
+            setMarginValue('innings');
+          } else if (runs) {
+            setMarginValue('runs');
+          } else if (wickets) {
+            setMarginValue('wickets');
+          }
+        }
+        const obj = {
+          start_date,
+          end_date,
+          ground: groundValue ? groundValue._id: '',
+          winner: winner._id,
+          teams: teamValues,
+          neutral: neutral? neutral: false,
+          draw: draw? draw: false,
+          tie: tie? tie: false,
+          innings: innings? innings: false,
+          runs: runs? runs: false,
+          wickets: wickets? wickets: false,
+          margin: margin? margin: '',
+          match_innings: matchInningsValues,
+          loser: loser._id
+        };
+        formik.setValues(obj, true);
+        setExistingValues(obj);
+      }
     }).catch((errors) => {
       console.log(errors);
     });
@@ -88,7 +163,7 @@ export const AddNewMatch = () => {
         if (['innings', 'runs', 'wickets'].includes(marginValue)) {
           request = { ...request, [marginValue]: true };
         }
-        const loser = teams.filter((ele)=> ele !== winner).join();
+        const loser = teams.filter((ele)=> ele.team !== winner).join();
         request = { ...request, winner, loser, margin };
       }
       const innings = [];
@@ -264,7 +339,10 @@ export const AddNewMatch = () => {
               name="match_innings"
               render={(arrayHelpers) => (
                 <div>
+
+
                   {
+
                     formik.values.match_innings.map((inning, index) => {
                       return (
                         <FormGroup key={index} sx= {{ display: 'flex', flexDirection: 'row' }}>
@@ -280,11 +358,15 @@ export const AddNewMatch = () => {
                               input={<OutlinedInput label="Team" />}
                               MenuProps={MenuProps}
                             >
-                              {[...teamData].filter((el)=> formik.values.teams.includes(el._id)).map((country) => (
-                                <MenuItem key={country._id} value={country._id}>
-                                  <ListItemText primary={country.name} />
-                                </MenuItem>
-                              ))}
+                              {
+                                [...teamData].filter((el)=>
+                                  formik.values.teams.includes(el._id)).map((country) =>{
+                                  return ( <MenuItem key={country._id} value={country._id}>
+                                    <ListItemText primary={country.name} />
+                                  </MenuItem>
+                                  );
+                                })
+                              }
                             </Select>
                           </FormControl>
                           <FormControl sx={{ m: 1, minWidth: 80 }}>

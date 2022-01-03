@@ -25,20 +25,32 @@ const currentTab = () => {
 };
 
 export const App = () => {
+  const [selectedMatch, setSelectedMatch] = useState(null);
   const [environment] = useState((process.env.NODE_ENV));
   const [value, setValue] = useState(currentTab());
+  let componentProps = {};
 
   const renderTabs = (label, value, index) => <Tab key={index} value={value} label={label} component={Link} to={value}/>;
+
+  const handleMatchUpdateSelection = (match) => {
+    setSelectedMatch(match);
+  };
 
   const renderRoutes = (index, production, props:PublicRouteProps ) => {
     // eslint-disable-next-line react/prop-types
     const { component: Component, path } = props;
     if (!production) {
+      if (path === '/add-new-match') {
+        componentProps = { selectedMatch: selectedMatch };
+      }
       return (<Route key = {index} path={path} element={<ProtectedRoute/>}>
-        <Route path={path} element = {<Component/>}/>
+        <Route path={path} element = {<Component { ...componentProps}/>}/>
       </Route>);
     } else {
-      return (<Route key = {index} path={path} element = {<Component />}/>);
+      if (path === '/') {
+        componentProps = { handleMatchUpdateSelection: handleMatchUpdateSelection };
+      }
+      return (<Route key = {index} path={path} element = {<Component { ...componentProps}/>}/>);
     }
   };
 
