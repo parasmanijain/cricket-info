@@ -58,7 +58,9 @@ const matchSchema = new mongoose.Schema({
     ground: { type: mongoose.Schema.Types.ObjectId, ref: 'Ground', required: true },
     teams: [{
         team: { type: mongoose.Schema.Types.ObjectId, ref: 'Team', required: true },
-        players: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Player', required: true }]
+        players: [{
+            player: { type: mongoose.Schema.Types.ObjectId, ref: 'Player', required: true }
+        }]
     }],
     neutral: { type: Boolean },
     match_innings: [{
